@@ -236,6 +236,12 @@ npm run build
 npm run demo    # writes examples/demo.html — open it in your browser
 ```
 
+## Support
+
+If this package saves you time, you can support its development:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Donate%20%E2%9D%A4-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/ieissa)
+
 ## License
 
 [MIT](https://github.com/eissa99/discord-transcriber/blob/main/LICENSE)

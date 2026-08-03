@@ -235,6 +235,12 @@ npm run demo    # يكتب examples/demo.html — افتحه في متصفحك
 
 <div dir="rtl">
 
+## الدعم
+
+إذا وفّرت عليك هذه الحزمة وقتًا، تقدر تدعم تطويرها:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Donate%20%E2%9D%A4-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/ieissa)
+
 ## الرخصة
 
 [MIT](https://github.com/eissa99/discord-transcriber/blob/main/LICENSE)
