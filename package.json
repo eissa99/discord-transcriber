@@ -23,6 +23,10 @@
     "url": "https://github.com/eissa99/discord-transcriber/issues"
   },
   "homepage": "https://github.com/eissa99/discord-transcriber#readme",
+  "funding": {
+    "type": "ko-fi",
+    "url": "https://ko-fi.com/ieissa"
+  },
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
