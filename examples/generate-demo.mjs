@@ -79,6 +79,10 @@ const messages = [
             content: '> Please include your **operating system** and `app version`.',
           },
           {
+            kind: 'textDisplay',
+            content: '-# CastCord Support team · usually replies within minutes',
+          },
+          {
             kind: 'actionRow',
             components: [
               { kind: 'button', label: 'Close', style: 'danger', disabled: false, url: null, emoji: null },

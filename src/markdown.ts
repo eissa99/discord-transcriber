@@ -90,6 +90,14 @@ const INLINE_RULES: InlineRule[] = [
       `<strong>${renderInline(raw.slice(2, -2), mentions, depth + 1)}</strong>`,
   },
   {
+    // Three underscores are underline + italics, and must be tried before the
+    // two-underscore rule eats their first pair.
+    name: 'underlineItalic',
+    pattern: String.raw`___[\s\S]+?___`,
+    render: (raw, mentions, depth) =>
+      `<u><em>${renderInline(raw.slice(3, -3), mentions, depth + 1)}</em></u>`,
+  },
+  {
     name: 'underline',
     pattern: String.raw`__[\s\S]+?__`,
     render: (raw, mentions, depth) =>
@@ -316,17 +324,29 @@ function renderBlocks(text: string, mentions: MentionIndex): string {
       continue;
     }
 
+    // Subtext: `-# ` at the very beginning of the line, like a heading.
+    const subtext = /^-#\s+(.+)$/.exec(line);
+    if (subtext) {
+      output.push(`<div class="md-subtext">${renderInline(subtext[1] ?? '', mentions)}</div>`);
+      index += 1;
+      continue;
+    }
+
     if (isListItem(line)) {
-      const items: string[] = [];
-      let ordered = /^\s*\d+\./.test(line);
+      const items: ListItem[] = [];
       while (index < lines.length && isListItem(lines[index] ?? '')) {
         const current = lines[index] ?? '';
-        if (items.length === 0) ordered = /^\s*\d+\./.test(current);
-        items.push(current.replace(/^\s*(?:[-*+]|\d+\.)\s+/, ''));
+        const match = /^(\s*)(?:([-*+])|(\d{1,3})\.)\s+(.*)$/.exec(current);
+        if (match) {
+          items.push({
+            indent: (match[1] ?? '').length,
+            ordered: match[3] !== undefined,
+            text: match[4] ?? '',
+          });
+        }
         index += 1;
       }
-      const rendered = items.map((item) => `<li>${renderInline(item, mentions)}</li>`).join('');
-      output.push(ordered ? `<ol>${rendered}</ol>` : `<ul>${rendered}</ul>`);
+      output.push(renderListItems(items, mentions));
       continue;
     }
 
@@ -338,6 +358,7 @@ function renderBlocks(text: string, mentions: MentionIndex): string {
         /^>>>\s?/.test(current) ||
         /^>\s?/.test(current) ||
         /^#{1,3}\s+/.test(current) ||
+        /^-#\s+/.test(current) ||
         isListItem(current)
       ) {
         break;
@@ -350,6 +371,51 @@ function renderBlocks(text: string, mentions: MentionIndex): string {
   }
 
   return output.join('');
+}
+
+interface ListItem {
+  readonly indent: number;
+  readonly ordered: boolean;
+  readonly text: string;
+}
+
+/**
+ * Builds a run of list items into (possibly nested) markup. Discord nests by
+ * indentation: a deeper item opens a sublist inside the item before it, and a
+ * shallower one returns to the enclosing level. Each level keeps the kind -
+ * ordered or bulleted - of its first item, as the client does.
+ */
+function renderListItems(items: readonly ListItem[], mentions: MentionIndex): string {
+  let position = 0;
+
+  function build(level: number): string {
+    const ordered = items[position]?.ordered === true;
+    let html = '';
+
+    while (position < items.length && (items[position]?.indent ?? 0) >= level) {
+      const item = items[position];
+      if (item === undefined) break;
+
+      if (item.indent > level) {
+        const nested = build(item.indent);
+        // The sublist lives inside the item before it.
+        html = html === '' ? `<li>${nested}</li>` : `${html.slice(0, -5)}${nested}</li>`;
+        continue;
+      }
+
+      html += `<li>${renderInline(item.text, mentions)}</li>`;
+      position += 1;
+    }
+
+    const tag = ordered ? 'ol' : 'ul';
+    return `<${tag}>${html}</${tag}>`;
+  }
+
+  let output = '';
+  while (position < items.length) {
+    output += build(items[position]?.indent ?? 0);
+  }
+  return output;
 }
 
 function isListItem(line: string): boolean {

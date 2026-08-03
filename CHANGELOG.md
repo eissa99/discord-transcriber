@@ -15,6 +15,8 @@
   beside the command name, and the invoker's name in their role colour
 - a forward's origin row is pressable: it jumps in-file when the original
   message is in the transcript, and links to it on discord.com otherwise
+- complete Discord markdown per the official Markdown Text 101: -# subtext,
+  nested lists by indentation, and triple-underscore underline italics
 - docs: real names in all examples
 
 ## 1.0.0

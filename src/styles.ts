@@ -257,6 +257,8 @@ body {
 .md-heading.h1 { font-size: 24px; }
 .md-heading.h2 { font-size: 20px; }
 .md-heading.h3 { font-size: 16px; }
+/* Discord's -# subtext: a size down and muted. */
+.md-subtext { font-size: 13px; color: var(--text-muted); }
 
 code.inline {
   background: var(--surface-deep);

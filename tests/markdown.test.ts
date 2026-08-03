@@ -399,3 +399,49 @@ describe('timestamp overflow', () => {
     expect(render('see you <t:99999999999999:F>')).toContain('timestamp-chip');
   });
 });
+
+describe('subtext', () => {
+  it('renders -# at the start of a line as subtext', () => {
+    expect(render('-# small print')).toContain('<div class="md-subtext">small print</div>');
+  });
+
+  it('renders inline formatting inside subtext', () => {
+    expect(render('-# small **bold** print')).toContain('<strong>bold</strong>');
+  });
+
+  it('leaves -# alone in the middle of a line', () => {
+    const html = render('this is not -# subtext');
+    expect(html).not.toContain('md-subtext');
+    expect(html).toContain('this is not -# subtext');
+  });
+
+  it('separates subtext from the paragraph above it', () => {
+    const html = render('a real line' + String.fromCharCode(10) + '-# the small print');
+    expect(html).toContain('<p>a real line</p>');
+    expect(html).toContain('<div class="md-subtext">the small print</div>');
+  });
+});
+
+describe('underline italics with three underscores', () => {
+  it('renders ___text___ as underlined italics', () => {
+    expect(render('___both___')).toContain('<u><em>both</em></u>');
+  });
+});
+
+describe('nested lists', () => {
+  it('nests an indented item under its parent', () => {
+    expect(render('- parent' + String.fromCharCode(10) + ' - child')).toContain(
+      '<ul><li>parent<ul><li>child</li></ul></li></ul>',
+    );
+  });
+
+  it('returns to the outer level after a nested run', () => {
+    const html = render(['- a', ' - b', '- c'].join(String.fromCharCode(10)));
+    expect(html).toContain('<li>a<ul><li>b</li></ul></li><li>c</li>');
+  });
+
+  it('keeps an ordered outer list ordered around a bulleted sublist', () => {
+    const html = render(['1. one', ' - sub', '2. two'].join(String.fromCharCode(10)));
+    expect(html).toContain('<ol><li>one<ul><li>sub</li></ul></li><li>two</li></ol>');
+  });
+});
