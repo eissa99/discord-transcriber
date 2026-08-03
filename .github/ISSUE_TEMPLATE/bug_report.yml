@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible problem
+title: '[Bug]: '
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include bot tokens, private messages, or other sensitive data.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Add the smallest example or steps that reproduce the problem.
+    validations:
+      required: true
+
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Include your Node.js, discord.js, and discord-transcriber versions.
+      placeholder: Node.js 20.x, discord.js 14.x, discord-transcriber 1.x
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Add any output that helps explain the problem.
