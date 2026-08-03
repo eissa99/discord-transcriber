@@ -29,6 +29,7 @@ import type {
   TranscriptStickerFormat,
   TranscriptSystemAction,
   TranscriptTextDisplay,
+  TranscriptThreadLastMessage,
   TranscriptThreadSummary,
 } from './types.js';
 
@@ -174,8 +175,10 @@ async function processMessages(
     });
   }
 
+  const threadPreviews = await fetchThreadPreviews(kept);
+
   const messages = kept.map((message, index) =>
-    toTranscriptMessage(message, summaries, kept[index - 1], channel),
+    toTranscriptMessage(message, summaries, kept[index - 1], channel, threadPreviews),
   );
 
   return { messages, mentions: await buildMentionIndex(kept, channel) };
@@ -346,6 +349,7 @@ function toTranscriptMessage(
   summaries: Map<string, ReferenceSummary>,
   previous: Message<true> | undefined,
   channel: GuildTextBasedChannel,
+  threadPreviews: ReadonlyMap<string, RawThreadMessage | null>,
 ): TranscriptMessage {
   const forwarded = toForward(message, channel);
   // A forward's reference points at the original message - usually in another
@@ -368,7 +372,7 @@ function toTranscriptMessage(
     reference,
     forwarded,
     interaction: toInteraction(message),
-    thread: toThread(message),
+    thread: toThread(message, threadPreviews.get(message.id) ?? null),
     reactions: toReactions(message),
     system: message.system,
     systemAction: toSystemAction(message.type),
@@ -423,13 +427,97 @@ function toInteraction(message: Message<true>): TranscriptCommandInteraction | n
   };
 }
 
-function toThread(message: Message<true>): TranscriptThreadSummary | null {
+/**
+ * The narrow structural surface of a thread's latest message the preview
+ * reads.
+ */
+interface RawThreadMessage {
+  readonly content?: string;
+  readonly createdAt?: Date;
+  readonly author?: {
+    readonly displayName?: string;
+    readonly username?: string;
+    readonly displayAvatarURL?: (options?: object) => string;
+  };
+  readonly member?: {
+    readonly displayName?: string;
+    readonly displayHexColor?: string;
+  } | null;
+}
+
+/**
+ * A channel full of threads should not turn into a burst of lookups, so the
+ * tail degrades to cards without a preview line rather than delaying
+ * generation.
+ */
+const MAX_THREAD_LOOKUPS = 20;
+
+/**
+ * Fetches each thread's latest message, for the preview line the client shows
+ * on the thread card. One REST read per thread, capped; any failure degrades
+ * to a card without the preview.
+ */
+async function fetchThreadPreviews(
+  messages: readonly Message<true>[],
+): Promise<Map<string, RawThreadMessage | null>> {
+  const previews = new Map<string, RawThreadMessage | null>();
+
+  const withThreads = messages
+    .filter((message) => (message as unknown as { thread?: unknown }).thread)
+    .slice(0, MAX_THREAD_LOOKUPS);
+
+  await Promise.all(
+    withThreads.map(async (message) => {
+      const thread = (
+        message as unknown as {
+          thread?: {
+            messages?: { fetch?: (options: { limit: number }) => Promise<unknown> };
+          } | null;
+        }
+      ).thread;
+
+      try {
+        const page = await thread?.messages?.fetch?.({ limit: 1 });
+        const latest = collectionValues(page)[0] as RawThreadMessage | undefined;
+        previews.set(message.id, latest ?? null);
+      } catch {
+        previews.set(message.id, null);
+      }
+    }),
+  );
+
+  return previews;
+}
+
+function toThread(
+  message: Message<true>,
+  preview: RawThreadMessage | null,
+): TranscriptThreadSummary | null {
   const thread =
     (message as unknown as { thread?: { name?: string; messageCount?: number | null } | null })
       .thread ?? null;
   if (thread === null) return null;
 
-  return { name: thread.name ?? 'thread', messageCount: thread.messageCount ?? null };
+  let lastMessage: TranscriptThreadLastMessage | null = null;
+  if (preview !== null) {
+    const hex = preview.member?.displayHexColor;
+    lastMessage = {
+      authorName:
+        preview.member?.displayName ??
+        preview.author?.displayName ??
+        preview.author?.username ??
+        'Unknown user',
+      authorAvatarUrl:
+        typeof preview.author?.displayAvatarURL === 'function'
+          ? preview.author.displayAvatarURL({ size: 32, extension: 'png' })
+          : null,
+      authorColor: hex !== undefined && hex !== '#000000' ? hex : null,
+      content: preview.content ?? '',
+      createdAt: preview.createdAt instanceof Date ? preview.createdAt : null,
+    };
+  }
+
+  return { name: thread.name ?? 'thread', messageCount: thread.messageCount ?? null, lastMessage };
 }
 
 function toSystemAction(type: MessageType): TranscriptSystemAction | null {

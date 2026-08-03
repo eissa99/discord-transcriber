@@ -337,6 +337,42 @@ describe('interactions and threads', () => {
     });
   });
 
+  it('previews the thread latest message on the card', async () => {
+    const latest = {
+      content: 'this is a thread message test',
+      createdAt: new Date('2026-07-31T00:30:00.000Z'),
+      author: {
+        username: 'z',
+        displayName: 'z',
+        displayAvatarURL: () => 'https://cdn.discordapp.com/avatars/9/z.png',
+      },
+      member: { displayName: 'z', displayHexColor: '#11806a' },
+    };
+    const withThread = {
+      ...fakeMessage({ id: '1', content: 'see thread' }),
+      thread: {
+        name: 'Test',
+        messageCount: 5,
+        messages: { fetch: () => Promise.resolve(new Map([['9', latest]])) },
+      },
+    } as unknown as Message<true>;
+
+    const { channel } = fakeChannel({ messages: [withThread] });
+    const collected = await collectMessages(channel, {});
+
+    expect(collected.messages[0]!.thread).toEqual({
+      name: 'Test',
+      messageCount: 5,
+      lastMessage: {
+        authorName: 'z',
+        authorAvatarUrl: 'https://cdn.discordapp.com/avatars/9/z.png',
+        authorColor: '#11806a',
+        content: 'this is a thread message test',
+        createdAt: new Date('2026-07-31T00:30:00.000Z'),
+      },
+    });
+  });
+
   it('collects the thread hanging off a message', async () => {
     const withThread = {
       ...fakeMessage({ id: '1', content: 'Let us discuss this aside.' }),
@@ -346,7 +382,11 @@ describe('interactions and threads', () => {
     const { channel } = fakeChannel({ messages: [withThread] });
     const collected = await collectMessages(channel, {});
 
-    expect(collected.messages[0]!.thread).toEqual({ name: 'side-discussion', messageCount: 12 });
+    expect(collected.messages[0]!.thread).toEqual({
+      name: 'side-discussion',
+      messageCount: 12,
+      lastMessage: null,
+    });
   });
 });
 

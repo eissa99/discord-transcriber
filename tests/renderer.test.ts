@@ -1374,11 +1374,56 @@ describe('command invocations, threads and boosts', () => {
   });
 
   it('marks the thread hanging off a message', () => {
-    const html = renderOne({ thread: { name: 'side-discussion', messageCount: 12 } });
+    const html = renderOne({
+      thread: { name: 'side-discussion', messageCount: 12, lastMessage: null },
+    });
 
     expect(html).toContain('class="thread-chip"');
     expect(html).toContain('side-discussion');
-    expect(html).toContain('12 messages');
+    expect(html).toContain('12 Messages ›');
+  });
+
+  it('previews the thread latest message like the client', () => {
+    const html = renderOne({
+      thread: {
+        name: 'Test',
+        messageCount: 5,
+        lastMessage: {
+          authorName: 'z',
+          authorAvatarUrl: 'https://cdn.discordapp.com/avatars/9/z.png',
+          authorColor: '#11806a',
+          content: 'this is a thread message test',
+          createdAt: BASE_DATE,
+        },
+      },
+    });
+
+    expect(html).toContain('class="thread-bottom"');
+    expect(html).toContain('class="thread-avatar"');
+    expect(html).toContain('style="color:#11806a"');
+    expect(html).toContain('this is a thread message test');
+  });
+
+  it('escapes a hostile thread preview', () => {
+    const html = renderOne({
+      thread: {
+        name: '<script>x</script>',
+        messageCount: 1,
+        lastMessage: {
+          authorName: '<img onerror=1>',
+          authorAvatarUrl: 'javascript:alert(1)',
+          authorColor: 'red;}</style>',
+          content: '<script>alert(1)</script>',
+          createdAt: null,
+        },
+      },
+    });
+
+    expect(html).not.toContain('<script>x');
+    expect(html).not.toContain('<script>alert');
+    expect(html).not.toContain('<img onerror');
+    expect(html).not.toContain('javascript:');
+    expect(html).not.toContain('red;}');
   });
 
   it('words a boost the way the client does', () => {

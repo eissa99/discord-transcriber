@@ -63,6 +63,7 @@ export type {
   TranscriptStickerFormat,
   TranscriptSystemAction,
   TranscriptTextDisplay,
+  TranscriptThreadLastMessage,
   TranscriptThreadSummary,
   TranscriptThumbnail,
 } from './types.js';

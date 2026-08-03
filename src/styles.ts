@@ -449,21 +449,39 @@ a.system-subject:hover { text-decoration: underline; }
 .forward-label svg { flex: none; }
 .forward-origin { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
 
-/* The chip Discord puts under a message a thread hangs off. */
+/* The thread card Discord puts under a message a thread hangs off: name and
+   message count on top, the latest message previewed beneath. */
 .thread-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
   background: var(--surface);
   border: 1px solid var(--divider);
   border-radius: 8px;
   padding: 8px 12px;
   margin-top: 6px;
+  max-width: 520px;
   font-size: 14px;
+}
+.thread-top { display: flex; align-items: center; gap: 8px; }
+.thread-name { color: var(--text-strong); font-weight: 600; }
+.thread-cta { color: var(--link); font-weight: 600; white-space: nowrap; }
+.thread-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
   color: var(--text-muted);
 }
-.thread-chip svg { flex: none; }
-.thread-chip .thread-name { color: var(--text-strong); font-weight: 600; }
+.thread-avatar { width: 16px; height: 16px; border-radius: 50%; flex: none; }
+.thread-author { font-weight: 500; color: var(--text-strong); flex: none; }
+.thread-preview {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text);
+}
+.thread-preview p { display: inline; margin: 0; }
+.thread-time { color: var(--text-muted); font-size: 12px; flex: none; }
 
 /*
  * A posted image or GIF. Discord shows these at their own size with no card, so

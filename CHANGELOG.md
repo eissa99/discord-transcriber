@@ -5,6 +5,8 @@
 - render forwarded messages: snapshot content, attachments, embeds, stickers
   and components, with a Forwarded label and the origin channel and time
 - a forward's reference no longer renders as a broken reply row
+- thread cards match the client: name, message count, and a preview of the
+  thread's latest message (avatar, author colour, text, time)
 - docs: real names in all examples
 
 ## 1.0.0

@@ -256,10 +256,21 @@ export interface TranscriptCommandInteraction {
   readonly userAvatarUrl: string | null;
 }
 
+/** The latest message in a thread, previewed on the thread card. */
+export interface TranscriptThreadLastMessage {
+  readonly authorName: string;
+  readonly authorAvatarUrl: string | null;
+  readonly authorColor: string | null;
+  readonly content: string;
+  readonly createdAt: Date | null;
+}
+
 /** The thread hanging off a message, as the client marks it on the parent. */
 export interface TranscriptThreadSummary {
   readonly name: string;
   readonly messageCount: number | null;
+  /** The thread's latest message, previewed as the client previews it. */
+  readonly lastMessage: TranscriptThreadLastMessage | null;
 }
 
 /**

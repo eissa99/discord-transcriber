@@ -33,6 +33,7 @@ import type {
   TranscriptSelect,
   TranscriptSticker,
   TranscriptSystemAction,
+  TranscriptThreadLastMessage,
   TranscriptThreadSummary,
   TranscriptThumbnail,
 } from './types.js';
@@ -482,7 +483,7 @@ function renderMessage(
   }
 
   if (message.thread) {
-    parts.push(renderThreadChip(message.thread));
+    parts.push(renderThreadChip(message.thread, mentions, generatedAt));
   }
 
   if (message.reactions.length > 0) {
@@ -560,20 +561,56 @@ function renderForward(forward: TranscriptForward, mentions: MentionIndex): stri
 }
 
 /**
- * The chip Discord puts under a message a thread hangs off. Static: the
- * thread's own conversation is a separate channel, transcribed on its own.
+ * The card Discord puts under a message a thread hangs off: the thread's name
+ * and message count on the top line, its latest message previewed beneath -
+ * avatar, author in their role colour, one clamped line of text, and the
+ * clock. Static: the thread's own conversation is a separate channel,
+ * transcribed on its own.
  */
-function renderThreadChip(thread: TranscriptThreadSummary): string {
-  const count =
+function renderThreadChip(
+  thread: TranscriptThreadSummary,
+  mentions: MentionIndex,
+  generatedAt: Date,
+): string {
+  const cta =
     thread.messageCount === null
       ? ''
-      : `<span class="thread-count">${escapeHtml(`${String(thread.messageCount)} message${thread.messageCount === 1 ? '' : 's'}`)}</span>`;
+      : `<span class="thread-cta">${escapeHtml(`${String(thread.messageCount)} Message${thread.messageCount === 1 ? '' : 's'}`)} ›</span>`;
 
   return (
     '<div class="thread-chip">' +
-    '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 2c5.5 0 10 3.8 10 8.5S17.5 19 12 19c-1 0-2-.1-2.9-.4l-4.7 2.3a.6.6 0 0 1-.8-.7l1-3.6C2.9 15.2 2 13 2 10.5 2 5.8 6.5 2 12 2Z"/></svg>' +
+    '<div class="thread-top">' +
     `<span class="thread-name">${escapeHtml(thread.name)}</span>` +
-    count +
+    cta +
+    '</div>' +
+    renderThreadPreview(thread.lastMessage, mentions, generatedAt) +
+    '</div>'
+  );
+}
+
+function renderThreadPreview(
+  last: TranscriptThreadLastMessage | null,
+  mentions: MentionIndex,
+  generatedAt: Date,
+): string {
+  if (last === null) return '';
+
+  const avatar = safeMediaUrl(last.authorAvatarUrl);
+  const color = safeHexColor(last.authorColor);
+  const nameStyle = color === null ? '' : ` style="color:${escapeHtml(color)}"`;
+  const time =
+    last.createdAt === null
+      ? ''
+      : `<span class="thread-time" title="${escapeHtml(formatTimestampTooltip(last.createdAt))}">${escapeHtml(formatDiscordTimestamp(last.createdAt, generatedAt))}</span>`;
+
+  return (
+    '<div class="thread-bottom">' +
+    (avatar === null
+      ? ''
+      : `<img class="thread-avatar" src="${escapeHtml(avatar)}" alt="" loading="lazy">`) +
+    `<span class="thread-author"${nameStyle}>${escapeHtml(last.authorName)}</span>` +
+    `<span class="thread-preview">${renderMarkdown(last.content, mentions)}</span>` +
+    time +
     '</div>'
   );
 }

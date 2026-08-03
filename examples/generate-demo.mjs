@@ -43,6 +43,7 @@ const base = {
   actionRows: [],
   reference: null,
   forwarded: null,
+  thread: null,
   reactions: [],
   system: false,
   systemAction: null,
@@ -142,6 +143,17 @@ const messages = [
     content: 'It happens on wifi *and* ethernet, so ~~my router~~ probably not the network.',
     groupedWithPrevious: true,
     reactions: [{ name: '👀', id: null, animated: false, count: 2 }],
+    thread: {
+      name: 'connection-debug',
+      messageCount: 5,
+      lastMessage: {
+        authorName: 'Eissa',
+        authorAvatarUrl: null,
+        authorColor: '#f0a52a',
+        content: 'works after the update 🎉',
+        createdAt: at(20),
+      },
+    },
   },
   {
     ...base,
