@@ -38,7 +38,7 @@ Everything, the way Discord shows it:
 - Rich embeds, buttons and select menus
 - Components V2 layouts: containers, sections, text displays, media
   galleries, files, separators
-- Slash-command rows ("Alice used /close"), thread markers, reactions,
+- Slash-command rows ("Eissa used /close"), thread markers, reactions,
   stickers
 - System events (pins, joins, boosts), edited and pinned markers, day
   dividers
@@ -149,8 +149,8 @@ ticket, why it was closed, what a form answered:
 await createTranscript(channel, {
   metadata: [
     { label: 'Category',  value: 'Technical Support', icon: 'tag' },
-    { label: 'Opened by', value: 'Alex (alex)',       icon: 'person' },
-    { label: 'Closed by', value: 'Sam (sam)',         icon: 'shield' },
+    { label: 'Opened by', value: '7sO (7so)',         icon: 'person' },
+    { label: 'Closed by', value: 'Eissa (eissa)',     icon: 'shield' },
     { label: 'Close reason', value: 'Resolved.', icon: 'note', wide: true },
   ],
   metadataTitle: 'Details', // panel heading — write it in any language

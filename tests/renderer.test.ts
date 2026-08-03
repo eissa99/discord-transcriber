@@ -19,8 +19,8 @@ function message(overrides: Partial<TranscriptMessage> = {}): TranscriptMessage 
     id: '900000000000000001',
     author: {
       id: '300000000000000001',
-      displayName: 'Alex',
-      username: 'alex',
+      displayName: '7sO',
+      username: '7so',
       avatarUrl: 'https://cdn.discordapp.com/avatars/1/a.png',
       bot: false,
       // An arbitrary role colour, deliberately unrelated to the brand palette.
@@ -64,7 +64,7 @@ function reply(
 ): NonNullable<TranscriptMessage['reference']> {
   return {
     messageId: '900000000000000002',
-    authorName: 'Sam',
+    authorName: 'Eissa',
     excerpt: 'Are you still there?',
     resolved: true,
     authorColor: null,
@@ -295,7 +295,7 @@ describe('transcript rendering', () => {
           message({
             id: '2',
             system: true,
-            content: 'Alex pinned a message.',
+            content: '7sO pinned a message.',
             author: { ...message().author, bot: true },
           }),
         ],
@@ -421,7 +421,7 @@ describe('transcript rendering', () => {
 
     // Discord puts the app tag before the name in a reply and after it in the
     // heading, so the two orders are deliberately different.
-    expect(html).toMatch(/<span class="badge">app<\/span><span class="name"[^>]*>Sam</);
+    expect(html).toMatch(/<span class="badge">app<\/span><span class="name"[^>]*>Eissa</);
   });
 
   it('flags that the message replied to carried media', () => {

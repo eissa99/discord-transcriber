@@ -489,7 +489,7 @@ function renderMessage(
 
 /**
  * The row Discord shows above an application's reply to a slash command:
- * "Alice used /close". It occupies the reply slot - a command reply carries no
+ * "Eissa used /close". It occupies the reply slot - a command reply carries no
  * message reference, so the two never collide - and the command takes the
  * mention pill's look, which is how the client colours it.
  */

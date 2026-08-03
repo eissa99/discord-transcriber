@@ -42,7 +42,7 @@ const { createTranscript } = require('discord-transcriber');
 - المرفقات — الصور معروضة، والصوت والفيديو بمشغلات، وبقية الملفات كبطاقات تنزيل
 - الإيمبد الغني، والأزرار، والقوائم المنسدلة
 - تخطيطات Components V2: الحاويات والأقسام وعروض النص ومعارض الوسائط والملفات والفواصل
-- سطر أوامر السلاش («Alice used /close»)، ومؤشرات الثريد، والتفاعلات، والملصقات
+- سطر أوامر السلاش («Eissa used /close»)، ومؤشرات الثريد، والتفاعلات، والملصقات
 - أحداث النظام (التثبيت، الانضمام، البوست)، وعلامات التعديل والتثبيت، وفواصل الأيام
 
 كلها بألوان ديسكورد ومسافاته وخطوطه.
@@ -154,7 +154,7 @@ await createTranscript(channel, {
 await createTranscript(channel, {
   metadata: [
     { label: 'القسم', value: 'الدعم الفني', icon: 'tag' },
-    { label: 'فتحها', value: 'Alex (alex)', icon: 'person' },
+    { label: 'فتحها', value: '7sO (7so)', icon: 'person' },
     { label: 'سبب الإغلاق', value: 'تم الحل.', icon: 'note', wide: true },
   ],
   metadataTitle: 'التفاصيل', // عنوان اللوحة — اكتبه بأي لغة

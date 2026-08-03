@@ -1,6 +1,6 @@
 {
   "name": "discord-transcriber",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pixel-accurate, self-contained HTML transcripts for Discord channels. XSS-safe by construction, CSP-locked, split into parts when a file would exceed the guild's upload limit.",
   "keywords": [
     "discord",

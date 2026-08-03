@@ -247,7 +247,7 @@ export type TranscriptSystemAction =
 
 /**
  * The invocation Discord shows above an application's reply to a slash
- * command: "Alice used /close". Read from the message's interaction record,
+ * command: "Eissa used /close". Read from the message's interaction record,
  * so the transcript keeps who asked for what a bot then did.
  */
 export interface TranscriptCommandInteraction {

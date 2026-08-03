@@ -6,7 +6,7 @@ import {
 } from '../src/markdown.js';
 
 const MENTIONS: MentionIndex = {
-  users: { '300000000000000001': 'Alex', '300000000000000002': 'Sam' },
+  users: { '300000000000000001': '7sO', '300000000000000002': 'Eissa' },
   roles: {
     '200000000000000001': { name: 'Support Team', color: '#9146ff' },
     '200000000000000002': { name: 'Muted', color: null },
@@ -110,8 +110,8 @@ describe('block structure', () => {
 
 describe('mentions', () => {
   it('resolves user mentions to display names', () => {
-    expect(render('hey <@300000000000000001>')).toContain('<span class="mention">@Alex</span>');
-    expect(render('hey <@!300000000000000002>')).toContain('<span class="mention">@Sam</span>');
+    expect(render('hey <@300000000000000001>')).toContain('<span class="mention">@7sO</span>');
+    expect(render('hey <@!300000000000000002>')).toContain('<span class="mention">@Eissa</span>');
   });
 
   it('resolves role mentions and applies the role colour', () => {
@@ -154,7 +154,7 @@ describe('mentions', () => {
   it('renders mentions inside formatting', () => {
     const html = render('**ping <@300000000000000001>**');
     expect(html).toContain('<strong>');
-    expect(html).toContain('@Alex');
+    expect(html).toContain('@7sO');
   });
 });
 

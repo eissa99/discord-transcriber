@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderTranscript } from '../dist/index.js';
 
-const alex = {
+const _7sO = {
   id: '300000000000000001',
   displayName: '7sO',
   username: '7so',
@@ -17,7 +17,7 @@ const alex = {
   color: '#00b0f4',
 };
 
-const sam = {
+const eissa = {
   id: '300000000000000002',
   displayName: 'Eissa',
   username: 'eissa',
@@ -118,7 +118,7 @@ const messages = [
   {
     ...base,
     id: '900000000000000003',
-    author: alex,
+    author: _7sO,
     createdAt: at(2),
     content:
       "Hey! The app **keeps disconnecting** every few minutes on Windows 11.\nI'm on version `4.2.1` — logs attached.",
@@ -136,7 +136,7 @@ const messages = [
   {
     ...base,
     id: '900000000000000004',
-    author: alex,
+    author: _7sO,
     createdAt: at(3),
     content: 'It happens on wifi *and* ethernet, so ~~my router~~ probably not the network.',
     groupedWithPrevious: true,
@@ -145,7 +145,7 @@ const messages = [
   {
     ...base,
     id: '900000000000000005',
-    author: sam,
+    author: eissa,
     createdAt: at(9),
     content:
       'Thanks <@300000000000000001>! That build had a heartbeat bug — ||fixed in 4.2.2||.\nTry updating and tell me if it still drops.',
@@ -163,7 +163,7 @@ const messages = [
   {
     ...base,
     id: '900000000000000006',
-    author: sam,
+    author: eissa,
     createdAt: at(10),
     content: 'Release notes:',
     embeds: [
@@ -192,7 +192,7 @@ const messages = [
   {
     ...base,
     id: '900000000000000007',
-    author: alex,
+    author: _7sO,
     createdAt: at(21),
     content: 'That fixed it — thank you so much! 🎉',
     editedAt: at(22),

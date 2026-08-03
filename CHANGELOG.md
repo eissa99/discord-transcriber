@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+- docs: real names in all examples
+
 ## 1.0.0
 
 Initial release.

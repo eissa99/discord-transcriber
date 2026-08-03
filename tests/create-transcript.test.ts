@@ -16,8 +16,8 @@ function fakeMessage(id: string, content: string): Message<true> {
     content,
     author: {
       id: '300000000000000001',
-      username: 'alex',
-      displayName: 'Alex',
+      username: '7so',
+      displayName: '7sO',
       bot: false,
       displayAvatarURL: () => 'https://cdn.discordapp.com/avatars/1/a.png',
     },

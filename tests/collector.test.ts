@@ -44,8 +44,8 @@ function fakeMessage(options: MessageOptions = {}): Message<true> {
     content: options.content ?? '',
     author: {
       id: authorId,
-      username: options.authorName ?? 'alex',
-      displayName: options.authorName ?? 'Alex',
+      username: options.authorName ?? '7so',
+      displayName: options.authorName ?? '7sO',
       bot: false,
       displayAvatarURL: () => 'https://cdn.discordapp.com/avatars/1/a.png',
     },
@@ -125,7 +125,7 @@ describe('mention names in a transcript', () => {
 
     expect(collected.mentions.users[SILENT_ID]).toBe('Nora');
     // The actor was already known: they authored the message.
-    expect(collected.mentions.users[AUTHOR_ID]).toBe('Alex');
+    expect(collected.mentions.users[AUTHOR_ID]).toBe('7sO');
   });
 
   it('prefers the server nickname over the global name', async () => {
