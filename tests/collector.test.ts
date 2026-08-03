@@ -106,6 +106,7 @@ function fakeChannel(options: ChannelOptions) {
     name: 'ticket-1042',
     messages: { fetch: () => Promise.resolve(page) },
     guild: {
+      id: '100000000000000001',
       members: { cache: new Map(), fetch: memberFetch },
       roles: { cache: new Map(Object.entries(options.guildRoles ?? {})) },
       channels: {
@@ -463,5 +464,9 @@ describe('forwarded messages', () => {
     );
     // The forward's reference must not become a broken reply row.
     expect(collectedMessage.reference).toBeNull();
+    // The origin link points at the original message on discord.com.
+    expect(collectedMessage.forwarded?.originUrl).toBe(
+      'https://discord.com/channels/100000000000000001/222222222222222222/111111111111111111',
+    );
   });
 });

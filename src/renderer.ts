@@ -437,7 +437,7 @@ function renderMessage(
   }
 
   if (message.forwarded) {
-    parts.push(renderForward(message.forwarded, mentions));
+    parts.push(renderForward(message.forwarded, mentions, jumpable));
   }
 
   // Rendered up front because whether the body shows its URL depends on whether
@@ -522,10 +522,16 @@ function renderInteraction(interaction: TranscriptCommandInteraction): string {
   );
 }
 
-/** The share-arrow glyph Discord puts beside the Forwarded label. */
+/** Discord's forward glyph, beside the Forwarded label. */
 const FORWARD_ICON =
   '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">' +
-  '<path fill="currentColor" d="M4 18v-4a6 6 0 0 1 6-6h6.6l-3.3-3.3a1 1 0 0 1 1.4-1.4l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4-1.4L16.6 10H10a4 4 0 0 0-4 4v4a1 1 0 1 1-2 0Z"/>' +
+  '<path fill="currentColor" d="M21.7 7.3a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4-1.4L18.58 9H13a7 7 0 0 0-7 7v4a1 1 0 1 1-2 0v-4a9 9 0 0 1 9-9h5.59l-3.3-3.3a1 1 0 0 1 1.42-1.4l5 5Z"/>' +
+  '</svg>';
+
+/** The chevron on the forward's origin row. */
+const FORWARD_CHEVRON =
+  '<svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true">' +
+  '<path fill="currentColor" d="M9.3 5.3a1 1 0 0 0 0 1.4l5.29 5.3-5.3 5.3a1 1 0 1 0 1.42 1.4l6-6a1 1 0 0 0 0-1.4l-6-6a1 1 0 0 0-1.42 0Z"/>' +
   '</svg>';
 
 /**
@@ -533,7 +539,11 @@ const FORWARD_ICON =
  * snapshot's material inside a quoted block, and the origin - channel and
  * time - beneath it.
  */
-function renderForward(forward: TranscriptForward, mentions: MentionIndex): string {
+function renderForward(
+  forward: TranscriptForward,
+  mentions: MentionIndex,
+  jumpable: ReadonlySet<string>,
+): string {
   const parts: string[] = [];
 
   if (forward.content.trim() !== '') {
@@ -554,20 +564,44 @@ function renderForward(forward: TranscriptForward, mentions: MentionIndex): stri
     parts.push(renderLayoutComponent(component, mentions));
   }
 
-  const origin: string[] = [];
-  if (forward.originChannelName !== null) origin.push(`#${forward.originChannelName}`);
-  if (forward.originTimestamp !== null) origin.push(formatDate(forward.originTimestamp));
-  const footer =
-    origin.length === 0 ? '' : `<div class="forward-origin">${escapeHtml(origin.join(' · '))}</div>`;
-
   return (
     '<div class="forward">' +
     `<div class="forward-label">${FORWARD_ICON}Forwarded</div>` +
     parts.join('') +
-    footer +
+    renderForwardOrigin(forward, jumpable) +
     '</div>'
   );
 }
+
+/**
+ * The forward's origin row - "#channel · time ›" - pressable as in the
+ * client. When the original message is inside this very transcript the row
+ * jumps to it; otherwise it links to the message on discord.com, which opens
+ * the app at the original.
+ */
+function renderForwardOrigin(forward: TranscriptForward, jumpable: ReadonlySet<string>): string {
+  const origin: string[] = [];
+  if (forward.originChannelName !== null) origin.push(`#${forward.originChannelName}`);
+  if (forward.originTimestamp !== null) origin.push(formatDate(forward.originTimestamp));
+
+  const jump =
+    forward.originMessageId === null ? null : jumpTarget(forward.originMessageId, jumpable);
+  const href = jump === null ? safeLinkUrl(forward.originUrl) : null;
+
+  const label = origin.length > 0 ? origin.join(' · ') : 'Original message';
+  const inner = escapeHtml(label) + FORWARD_CHEVRON;
+
+  if (jump !== null) {
+    return `<a class="forward-origin" ${jump}>${inner}</a>`;
+  }
+  if (href !== null) {
+    return `<a class="forward-origin" href="${escapeHtml(href)}" rel="noopener noreferrer nofollow" target="_blank">${inner}</a>`;
+  }
+  if (origin.length === 0) return '';
+  return `<div class="forward-origin">${escapeHtml(label)}</div>`;
+}
+
+
 
 /**
  * The card Discord puts under a message a thread hangs off: the thread's name

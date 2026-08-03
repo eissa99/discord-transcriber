@@ -294,6 +294,10 @@ export interface TranscriptForward {
   readonly originChannelName: string | null;
   /** When the original message was sent, when the snapshot carries it. */
   readonly originTimestamp: Date | null;
+  /** The original message's ID - the jump target when it is in this transcript. */
+  readonly originMessageId: string | null;
+  /** A discord.com link to the original message, for when it is not. */
+  readonly originUrl: string | null;
 }
 
 export interface TranscriptMessage {

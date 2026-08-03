@@ -237,6 +237,8 @@ Welcome to **CastCord** Support!`,
       ],
       originChannelName: '「🌐」welcome',
       originTimestamp: new Date(Date.UTC(2026, 6, 24, 5, 4)),
+      originMessageId: null,
+      originUrl: 'https://discord.com/channels/100000000000000001/100000000000000002/100000000000000003',
     },
   },
   {

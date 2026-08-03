@@ -1585,6 +1585,8 @@ describe('forwarded messages', () => {
     components: [],
     originChannelName: 'welcome',
     originTimestamp: new Date('2026-03-01T05:04:00.000Z'),
+    originMessageId: null,
+    originUrl: null,
   };
 
   it('renders the forwarded material with its label and origin', () => {
@@ -1599,6 +1601,64 @@ describe('forwarded messages', () => {
     expect(html).toContain('#welcome · 2026-03-01 05:04:00 UTC');
     // A forward is not a reply: no dead "unknown message" row.
     expect(html).not.toContain('not included in this transcript');
+  });
+
+  it('links the origin row to the message on discord.com', () => {
+    const html = renderTranscript(
+      data({
+        messages: [
+          message({
+            content: '',
+            forwarded: {
+              ...forward,
+              originMessageId: '111111111111111111',
+              originUrl: 'https://discord.com/channels/2/3/111111111111111111',
+            },
+          }),
+        ],
+      }),
+      { maxBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).toContain(
+      '<a class="forward-origin" href="https://discord.com/channels/2/3/111111111111111111"',
+    );
+  });
+
+  it('jumps in-file when the original message is in this transcript', () => {
+    const html = renderTranscript(
+      data({
+        messages: [
+          message({ id: '900000000000000077' }),
+          message({
+            id: '900000000000000078',
+            content: '',
+            forwarded: { ...forward, originMessageId: '900000000000000077', originUrl: null },
+          }),
+        ],
+      }),
+      { maxBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).toContain('<a class="forward-origin" href="#m900000000000000077"');
+    expect(html).toContain('data-goto="900000000000000077"');
+  });
+
+  it('drops a hostile origin link', () => {
+    const html = renderTranscript(
+      data({
+        messages: [
+          message({
+            content: '',
+            forwarded: { ...forward, originMessageId: null, originUrl: 'javascript:alert(1)' },
+          }),
+        ],
+      }),
+      { maxBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).not.toContain('javascript:');
+    expect(html).toContain('<div class="forward-origin">');
   });
 
   it('escapes hostile forwarded content', () => {

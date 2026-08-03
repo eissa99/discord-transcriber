@@ -1009,6 +1009,20 @@ function toForward(
       ? undefined
       : channel.guild.channels?.cache?.get(originChannelId);
 
+  // Everything a link to the original needs is on the reference; the guild
+  // falls back to this one, which is where a same-server forward comes from.
+  const snowflake = /^\d{17,20}$/;
+  const originGuildId = message.reference?.guildId ?? channel.guild.id;
+  const originMessageId = message.reference?.messageId ?? null;
+  const originUrl =
+    originChannelId !== undefined &&
+    originMessageId !== null &&
+    snowflake.test(originGuildId) &&
+    snowflake.test(originChannelId) &&
+    snowflake.test(originMessageId)
+      ? `https://discord.com/channels/${originGuildId}/${originChannelId}/${originMessageId}`
+      : null;
+
   return {
     content: snapshot?.content ?? '',
     attachments: collectionValues(snapshot?.attachments).map((attachment) =>
@@ -1028,6 +1042,8 @@ function toForward(
         : typeof snapshot?.createdTimestamp === 'number'
           ? new Date(snapshot.createdTimestamp)
           : null,
+    originMessageId,
+    originUrl,
   };
 }
 

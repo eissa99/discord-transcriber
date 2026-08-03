@@ -13,6 +13,8 @@
   reveal remains only as the no-script fallback
 - the command-invocation row matches the current client: the apps glyph
   beside the command name, and the invoker's name in their role colour
+- a forward's origin row is pressable: it jumps in-file when the original
+  message is in the transcript, and links to it on discord.com otherwise
 - docs: real names in all examples
 
 ## 1.0.0

@@ -459,7 +459,18 @@ a.system-subject:hover { text-decoration: underline; }
   margin-bottom: 2px;
 }
 .forward-label svg { flex: none; }
-.forward-origin { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+.forward-origin {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 4px;
+  text-decoration: none;
+}
+a.forward-origin { cursor: pointer; }
+a.forward-origin:hover { color: var(--text); text-decoration: underline; }
+.forward-origin svg { flex: none; }
 
 /* The thread card Discord puts under a message a thread hangs off: name and
    message count on top, the latest message previewed beneath. */
