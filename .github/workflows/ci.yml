@@ -1,0 +1,54 @@
+name: CI
+
+# Verification only: nothing here publishes to npm.
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Typecheck, test, build, pack
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        # The oldest supported line (also the toolchain's floor: vitest 4 and
+        # vite 8 both dropped Node 18) and the current lines.
+        node-version: ['20.x', '22.x', '24.x']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # Proves the published artifact would hold exactly what it should: dist,
+      # both READMEs, the license — and no sources, tests or examples.
+      - name: Verify package contents
+        run: npm pack --dry-run

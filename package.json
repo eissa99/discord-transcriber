@@ -1,0 +1,69 @@
+{
+  "name": "discord-transcriber",
+  "version": "0.1.1",
+  "description": "Pixel-accurate, self-contained HTML transcripts for Discord channels. XSS-safe by construction, CSP-locked, split into parts when a file would exceed the guild's upload limit.",
+  "keywords": [
+    "discord",
+    "discord.js",
+    "transcript",
+    "transcripts",
+    "html-transcript",
+    "chat-export",
+    "ticket",
+    "archive",
+    "logging"
+  ],
+  "license": "MIT",
+  "author": "eissa <esanho15v2@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eissa99/discord-transcriber.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eissa99/discord-transcriber/issues"
+  },
+  "homepage": "https://github.com/eissa99/discord-transcriber#readme",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "README.ar.md",
+    "CHANGELOG.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "demo": "node examples/generate-demo.mjs",
+    "prepublishOnly": "npm run typecheck && npm run test && npm run build"
+  },
+  "peerDependencies": {
+    "discord.js": "^14.19.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "discord.js": "14.27.0",
+    "tsup": "8.5.0",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  }
+}
