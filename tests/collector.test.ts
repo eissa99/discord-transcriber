@@ -213,9 +213,13 @@ describe('suppressed role and channel mentions', () => {
   it('resolves them from the guild caches', async () => {
     const { channel } = fakeChannel({
       messages: [
-        fakeMessage({ content: 'ping <@&500000000000000001> in <#600000000000000001>' }),
+        fakeMessage({
+          content: 'ping <@&500000000000000001> in <#600000000000000001>',
+        }),
       ],
-      guildRoles: { '500000000000000001': { name: 'Support Team', hexColor: '#11806a' } },
+      guildRoles: {
+        '500000000000000001': { name: 'Support Team', hexColor: '#11806a' },
+      },
       guildChannels: { '600000000000000001': 'general' },
     });
 
@@ -246,7 +250,10 @@ describe('Components V2 collection', () => {
         type: ComponentType.Container,
         hexAccentColor: '#9146ff',
         components: [
-          { type: ComponentType.TextDisplay, content: `Welcome <@${SILENT_ID}>!` },
+          {
+            type: ComponentType.TextDisplay,
+            content: `Welcome <@${SILENT_ID}>!`,
+          },
           {
             type: ComponentType.ActionRow,
             components: [
@@ -321,7 +328,9 @@ describe('filtering and pre-fetched messages', () => {
       reference: { messageId: '2' },
     } as unknown as Message<true>;
 
-    const { channel } = fakeChannel({ messages: [kept, dropped, replyToDropped] });
+    const { channel } = fakeChannel({
+      messages: [kept, dropped, replyToDropped],
+    });
     const collected = await collectMessages(channel, {
       filter: (message) => !message.author.bot,
     });
@@ -438,7 +447,11 @@ describe('forwarded messages', () => {
   it('reads the snapshot and drops the pseudo-reply', async () => {
     const forwarded = {
       ...fakeMessage({ id: '900000000000000009', content: '' }),
-      reference: { messageId: '111111111111111111', channelId: '222222222222222222', type: 1 },
+      reference: {
+        messageId: '111111111111111111',
+        channelId: '222222222222222222',
+        type: 1,
+      },
       messageSnapshots: new Map([
         [
           '111111111111111111',

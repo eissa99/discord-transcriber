@@ -36,7 +36,11 @@ export interface MentionIndex {
   readonly channels: Readonly<Record<string, string>>;
 }
 
-export const EMPTY_MENTIONS: MentionIndex = { users: {}, roles: {}, channels: {} };
+export const EMPTY_MENTIONS: MentionIndex = {
+  users: {},
+  roles: {},
+  channels: {},
+};
 
 /** Guards against pathological nesting such as `***********text***********`. */
 const MAX_DEPTH = 8;

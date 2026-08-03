@@ -73,12 +73,7 @@ export interface TranscriptEmbed {
 }
 
 export type TranscriptButtonStyle =
-  | 'primary'
-  | 'secondary'
-  | 'success'
-  | 'danger'
-  | 'link'
-  | 'premium';
+  'primary' | 'secondary' | 'success' | 'danger' | 'link' | 'premium';
 
 export interface TranscriptComponentEmoji {
   readonly name: string;
@@ -238,12 +233,7 @@ export interface TranscriptReaction {
  * reaches the transcript as a message with nothing in it.
  */
 export type TranscriptSystemAction =
-  | 'pinned'
-  | 'joined'
-  | 'boosted'
-  | 'boostedTier1'
-  | 'boostedTier2'
-  | 'boostedTier3';
+  'pinned' | 'joined' | 'boosted' | 'boostedTier1' | 'boostedTier2' | 'boostedTier3';
 
 /**
  * The invocation Discord shows above an application's reply to a slash

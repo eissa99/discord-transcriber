@@ -217,7 +217,10 @@ function planParts(data: TranscriptData, budget: number): PartRange[] {
  */
 function renderPartBody(data: TranscriptData, range: PartRange): { html: string; count: number } {
   if (range.end === range.start) {
-    return { html: '<p class="doc-footer">This channel contains no messages.</p>', count: 0 };
+    return {
+      html: '<p class="doc-footer">This channel contains no messages.</p>',
+      count: 0,
+    };
   }
 
   const jumpable = new Set<string>();
@@ -547,7 +550,9 @@ function renderForward(
   const parts: string[] = [];
 
   if (forward.content.trim() !== '') {
-    parts.push(`<div class="content" dir="auto">${renderMarkdown(forward.content, mentions)}</div>`);
+    parts.push(
+      `<div class="content" dir="auto">${renderMarkdown(forward.content, mentions)}</div>`,
+    );
   }
   if (forward.attachments.length > 0) {
     parts.push(
@@ -600,8 +605,6 @@ function renderForwardOrigin(forward: TranscriptForward, jumpable: ReadonlySet<s
   if (origin.length === 0) return '';
   return `<div class="forward-origin">${escapeHtml(label)}</div>`;
 }
-
-
 
 /**
  * The card Discord puts under a message a thread hangs off: the thread's name
@@ -669,9 +672,10 @@ function layoutComponents(message: TranscriptMessage): readonly TranscriptLayout
   const tree = message.components as readonly TranscriptLayoutComponent[] | undefined;
   if (tree !== undefined && tree.length > 0) return tree;
 
-  return message.actionRows.map(
-    (row): TranscriptLayoutActionRow => ({ kind: 'actionRow', components: row.components }),
-  );
+  return message.actionRows.map((row): TranscriptLayoutActionRow => ({
+    kind: 'actionRow',
+    components: row.components,
+  }));
 }
 
 /**
@@ -682,7 +686,10 @@ function layoutComponents(message: TranscriptMessage): readonly TranscriptLayout
  * an ornament under it. An unrecognised kind renders nothing rather than
  * guessing.
  */
-function renderLayoutComponent(component: TranscriptLayoutComponent, mentions: MentionIndex): string {
+function renderLayoutComponent(
+  component: TranscriptLayoutComponent,
+  mentions: MentionIndex,
+): string {
   switch (component.kind) {
     case 'actionRow':
       return renderActionRow(component);
@@ -769,7 +776,10 @@ function renderGalleryItem(item: TranscriptMedia): string {
  * A separator is padding, and optionally a rule. It carries no content, so it
  * is the one component that is purely a stylesheet hook.
  */
-function renderSeparator(separator: { readonly divider: boolean; readonly spacing: string }): string {
+function renderSeparator(separator: {
+  readonly divider: boolean;
+  readonly spacing: string;
+}): string {
   const classes = ['dseparator'];
   classes.push(separator.spacing === 'large' ? 'dseparator-large' : 'dseparator-small');
   if (separator.divider) classes.push('divided');
@@ -1226,8 +1236,7 @@ function renderEmbed(embed: TranscriptEmbed, mentions: MentionIndex): RenderedEm
     parts.push(`<img class="ethumb" src="${escapeHtml(thumbnail)}" alt="" loading="lazy">`);
   }
   const image =
-    pickMedia(embed.imageProxyUrl, embed.imageUrl) ??
-    (embed.kind === 'video' ? thumbnail : null);
+    pickMedia(embed.imageProxyUrl, embed.imageUrl) ?? (embed.kind === 'video' ? thumbnail : null);
   if (image !== null) {
     parts.push(`<img class="eimage" src="${escapeHtml(image)}" alt="" loading="lazy">`);
   }
@@ -1240,7 +1249,10 @@ function renderEmbed(embed: TranscriptEmbed, mentions: MentionIndex): RenderedEm
     parts.push(`<div class="efooter">${iconHtml}${escapeHtml(embed.footerText)}</div>`);
   }
 
-  return { html: `<div class="embed"${style}>${parts.join('')}</div>`, displaysUrl: null };
+  return {
+    html: `<div class="embed"${style}>${parts.join('')}</div>`,
+    displaysUrl: null,
+  };
 }
 
 /**

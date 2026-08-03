@@ -1,10 +1,11 @@
-import { ButtonStyle, ComponentType, MessageFlags, MessageType, SeparatorSpacingSize } from 'discord.js';
-import type {
-  Collection,
-  GuildTextBasedChannel,
-  Message,
-  Snowflake,
+import {
+  ButtonStyle,
+  ComponentType,
+  MessageFlags,
+  MessageType,
+  SeparatorSpacingSize,
 } from 'discord.js';
+import type { Collection, GuildTextBasedChannel, Message, Snowflake } from 'discord.js';
 import type { MentionIndex, ResolvedRole } from './markdown.js';
 import type {
   TranscriptActionRow,
@@ -165,7 +166,10 @@ async function processMessages(
       authorName: displayName(message),
       excerpt: truncate(messageText(message).replace(/\s+/g, ' ').trim(), REFERENCE_EXCERPT_LENGTH),
       color: readRoleColor(message),
-      avatarUrl: message.author.displayAvatarURL({ size: 32, extension: 'png' }),
+      avatarUrl: message.author.displayAvatarURL({
+        size: 32,
+        extension: 'png',
+      }),
       bot: message.author.bot,
       hasMedia:
         message.attachments.size > 0 ||
@@ -208,7 +212,10 @@ async function buildMentionIndex(
       users[id] = member?.displayName ?? user.displayName;
     }
     for (const [id, role] of message.mentions.roles) {
-      roles[id] = { name: role.name, color: role.hexColor === '#000000' ? null : role.hexColor };
+      roles[id] = {
+        name: role.name,
+        color: role.hexColor === '#000000' ? null : role.hexColor,
+      };
     }
     for (const [id, mentioned] of message.mentions.channels) {
       channels[id] =
@@ -283,7 +290,9 @@ function resolveSuppressedRoleAndChannelMentions(
   channels: Record<string, string>,
 ): void {
   const guild = channel.guild as unknown as {
-    roles?: { cache?: ReadonlyMap<string, { name?: string; hexColor?: string }> };
+    roles?: {
+      cache?: ReadonlyMap<string, { name?: string; hexColor?: string }>;
+    };
     channels?: { cache?: ReadonlyMap<string, { name?: string }> };
   };
 
@@ -462,19 +471,15 @@ function toInteraction(
   message: Message<true>,
   channel: GuildTextBasedChannel,
 ): TranscriptCommandInteraction | null {
-  const raw =
-    (message as unknown as { interaction?: RawInteraction | null }).interaction ?? null;
+  const raw = (message as unknown as { interaction?: RawInteraction | null }).interaction ?? null;
   if (raw === null) return null;
 
   // The invoker's role colour, from the member cache - as on a reply row.
   const memberHex =
     raw.user?.id === undefined
       ? undefined
-      : (
-          channel.guild.members?.cache?.get(raw.user.id) as
-            | { displayHexColor?: string }
-            | undefined
-        )?.displayHexColor;
+      : (channel.guild.members?.cache?.get(raw.user.id) as { displayHexColor?: string } | undefined)
+          ?.displayHexColor;
 
   return {
     commandName: raw.commandName ?? 'command',
@@ -531,7 +536,9 @@ async function fetchThreadPreviews(
       const thread = (
         message as unknown as {
           thread?: {
-            messages?: { fetch?: (options: { limit: number }) => Promise<unknown> };
+            messages?: {
+              fetch?: (options: { limit: number }) => Promise<unknown>;
+            };
           } | null;
         }
       ).thread;
@@ -554,8 +561,11 @@ function toThread(
   preview: RawThreadMessage | null,
 ): TranscriptThreadSummary | null {
   const thread =
-    (message as unknown as { thread?: { name?: string; messageCount?: number | null } | null })
-      .thread ?? null;
+    (
+      message as unknown as {
+        thread?: { name?: string; messageCount?: number | null } | null;
+      }
+    ).thread ?? null;
   if (thread === null) return null;
 
   let lastMessage: TranscriptThreadLastMessage | null = null;
@@ -577,7 +587,11 @@ function toThread(
     };
   }
 
-  return { name: thread.name ?? 'thread', messageCount: thread.messageCount ?? null, lastMessage };
+  return {
+    name: thread.name ?? 'thread',
+    messageCount: thread.messageCount ?? null,
+    lastMessage,
+  };
 }
 
 function toSystemAction(type: MessageType): TranscriptSystemAction | null {
@@ -836,7 +850,11 @@ function toSection(section: RawComponent, depth: number): TranscriptSection {
       (child): child is TranscriptTextDisplay => child !== null && child.kind === 'textDisplay',
     );
 
-  return { kind: 'section', content, accessory: toAccessory(section.accessory ?? null) };
+  return {
+    kind: 'section',
+    content,
+    accessory: toAccessory(section.accessory ?? null),
+  };
 }
 
 /** A section's accessory is a button or a thumbnail, and nothing else. */
@@ -844,7 +862,10 @@ function toAccessory(accessory: RawComponent | null): TranscriptSectionAccessory
   if (!accessory) return null;
 
   if (accessory.type === ComponentType.Thumbnail) {
-    return { kind: 'thumbnail', media: toMedia(accessory.media, accessory.description) };
+    return {
+      kind: 'thumbnail',
+      media: toMedia(accessory.media, accessory.description),
+    };
   }
 
   return toComponent(accessory);
@@ -1005,9 +1026,7 @@ function toForward(
   const originChannelId = message.reference?.channelId;
   // Structural read: hand-built channel objects need not model the cache.
   const origin =
-    originChannelId === undefined
-      ? undefined
-      : channel.guild.channels?.cache?.get(originChannelId);
+    originChannelId === undefined ? undefined : channel.guild.channels?.cache?.get(originChannelId);
 
   // Everything a link to the original needs is on the reference; the guild
   // falls back to this one, which is where a same-server forward comes from.

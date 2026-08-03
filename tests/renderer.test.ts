@@ -94,13 +94,17 @@ describe('transcript rendering', () => {
   });
 
   it('titles the document after the channel and guild', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+    })[0]!.content.toString('utf8');
     expect(html).toContain('<title>#support-1042 · Awesome Guild</title>');
   });
 
   it('takes a custom title', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET, title: 'Ticket 1042' })[0]!
-      .content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+      title: 'Ticket 1042',
+    })[0]!.content.toString('utf8');
     expect(html).toContain('<title>Ticket 1042</title>');
   });
 
@@ -111,7 +115,9 @@ describe('transcript rendering', () => {
   });
 
   it('is self-contained: nothing is fetched, and styling is inline', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+    })[0]!.content.toString('utf8');
 
     expect(html).not.toContain('javascript:');
     expect(html).toContain('<style>');
@@ -129,7 +135,9 @@ describe('transcript rendering', () => {
   });
 
   it('writes every full timestamp with its zone', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+    })[0]!.content.toString('utf8');
 
     // Self-describing rather than explained by a note elsewhere, so a line
     // copied out of the document stays unambiguous. The generation instant in
@@ -139,14 +147,18 @@ describe('transcript rendering', () => {
   });
 
   it('carries no logo and no brand line unless one is provided', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+    })[0]!.content.toString('utf8');
 
     expect(html).not.toContain('class="brand-mark"');
     expect(html).not.toContain('<div class="brand">');
   });
 
   it('declares a content security policy that admits only its own script', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+    })[0]!.content.toString('utf8');
 
     expect(html).toContain('Content-Security-Policy');
     expect(html).toContain('default-src &#39;none&#39;');
@@ -162,7 +174,9 @@ describe('transcript rendering', () => {
   });
 
   it('ships the exact bytes its policy hashes', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+    })[0]!.content.toString('utf8');
 
     // The hash is derived from the script constant, so a drift between the two
     // is impossible by construction - this guards the wiring, not the maths.
@@ -260,7 +274,11 @@ describe('transcript rendering', () => {
         maxBytes: BIG_BUDGET,
         title: payload,
         filename: '../../../etc/passwd',
-        brand: { name: payload, footerText: payload, accentColor: 'red;}</style>' },
+        brand: {
+          name: payload,
+          footerText: payload,
+          accentColor: 'red;}</style>',
+        },
         metadata: [{ label: payload, value: payload }],
         metadataTitle: payload,
         notices: [payload],
@@ -345,7 +363,9 @@ describe('transcript rendering', () => {
   });
 
   it('defaults the accent to Discord blurple', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+    })[0]!.content.toString('utf8');
 
     // Scoped to the stylesheet variable: a message author's role colour is
     // unrelated data that also lands in the document.
@@ -376,7 +396,9 @@ describe('transcript rendering', () => {
   });
 
   it('renders an empty channel without failing', () => {
-    const parts = renderTranscript(data({ messages: [] }), { maxBytes: BIG_BUDGET });
+    const parts = renderTranscript(data({ messages: [] }), {
+      maxBytes: BIG_BUDGET,
+    });
     expect(parts).toHaveLength(1);
     expect(parts[0]!.content.toString('utf8')).toContain('contains no messages');
   });
@@ -397,7 +419,9 @@ describe('transcript rendering', () => {
 
   it('names the attachment when the message replied to had no text', () => {
     const html = renderTranscript(
-      data({ messages: [message({ reference: reply({ excerpt: '', hasMedia: true }) })] }),
+      data({
+        messages: [message({ reference: reply({ excerpt: '', hasMedia: true }) })],
+      }),
       { maxBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -406,7 +430,9 @@ describe('transcript rendering', () => {
 
   it('leaves the quoted line empty when there was nothing to quote', () => {
     const html = renderTranscript(
-      data({ messages: [message({ reference: reply({ excerpt: '', hasMedia: false }) })] }),
+      data({
+        messages: [message({ reference: reply({ excerpt: '', hasMedia: false }) })],
+      }),
       { maxBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -449,14 +475,22 @@ describe('transcript rendering', () => {
 
 describe('embed fields', () => {
   function fieldEmbed(fields: TranscriptEmbed['fields']): TranscriptEmbed {
-    return { ...mediaEmbed(), kind: 'rich', url: null, thumbnailUrl: null, fields };
+    return {
+      ...mediaEmbed(),
+      kind: 'rich',
+      url: null,
+      thumbnailUrl: null,
+      fields,
+    };
   }
 
   it('gives a field that is not inline the full width', () => {
     const html = renderTranscript(
       data({
         messages: [
-          message({ embeds: [fieldEmbed([{ name: 'Subject', value: '11111', inline: false }])] }),
+          message({
+            embeds: [fieldEmbed([{ name: 'Subject', value: '11111', inline: false }])],
+          }),
         ],
       }),
       { maxBytes: BIG_BUDGET },
@@ -641,7 +675,15 @@ describe('message components', () => {
       data({
         messages: [
           message({
-            actionRows: [row([{ kind: 'select', placeholder: 'Pick a member', disabled: false }])],
+            actionRows: [
+              row([
+                {
+                  kind: 'select',
+                  placeholder: 'Pick a member',
+                  disabled: false,
+                },
+              ]),
+            ],
           }),
         ],
       }),
@@ -772,7 +814,14 @@ describe('system events', () => {
   it('leaves the phrase plain when the pinned message is not in the transcript', () => {
     const html = renderTranscript(
       data({
-        messages: [message({ content: '', system: true, systemAction: 'pinned', reference: null })],
+        messages: [
+          message({
+            content: '',
+            system: true,
+            systemAction: 'pinned',
+            reference: null,
+          }),
+        ],
       }),
       { maxBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
@@ -783,7 +832,13 @@ describe('system events', () => {
   it('leaves an unnamed system message on the ordinary path', () => {
     const html = renderTranscript(
       data({
-        messages: [message({ content: 'Something happened.', system: true, systemAction: null })],
+        messages: [
+          message({
+            content: 'Something happened.',
+            system: true,
+            systemAction: null,
+          }),
+        ],
       }),
       { maxBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
@@ -822,7 +877,9 @@ function mediaEmbed(overrides: Partial<TranscriptEmbed> = {}): TranscriptEmbed {
 describe('posted images and GIFs', () => {
   it('shows the picture itself rather than a thumbnail in a card', () => {
     const html = renderTranscript(
-      data({ messages: [message({ content: GIF_URL, embeds: [mediaEmbed()] })] }),
+      data({
+        messages: [message({ content: GIF_URL, embeds: [mediaEmbed()] })],
+      }),
       { maxBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -835,7 +892,9 @@ describe('posted images and GIFs', () => {
 
   it('hides the URL when the link is the whole message, as Discord does', () => {
     const html = renderTranscript(
-      data({ messages: [message({ content: GIF_URL, embeds: [mediaEmbed()] })] }),
+      data({
+        messages: [message({ content: GIF_URL, embeds: [mediaEmbed()] })],
+      }),
       { maxBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -844,7 +903,14 @@ describe('posted images and GIFs', () => {
 
   it('keeps the URL visible when the message also says something', () => {
     const html = renderTranscript(
-      data({ messages: [message({ content: `look at this ${GIF_URL}`, embeds: [mediaEmbed()] })] }),
+      data({
+        messages: [
+          message({
+            content: `look at this ${GIF_URL}`,
+            embeds: [mediaEmbed()],
+          }),
+        ],
+      }),
       { maxBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -964,11 +1030,16 @@ describe('stickers', () => {
 
 describe('oversized transcripts', () => {
   const many = Array.from({ length: 400 }, (_value, index) =>
-    message({ id: String(index), content: `Message number ${String(index)} `.repeat(40) }),
+    message({
+      id: String(index),
+      content: `Message number ${String(index)} `.repeat(40),
+    }),
   );
 
   it('splits into several complete standalone files instead of hosting anything', () => {
-    const parts = renderTranscript(data({ messages: many }), { maxBytes: 200 * 1024 });
+    const parts = renderTranscript(data({ messages: many }), {
+      maxBytes: 200 * 1024,
+    });
 
     expect(parts.length).toBeGreaterThan(1);
     for (const part of parts) {
@@ -988,16 +1059,16 @@ describe('oversized transcripts', () => {
   });
 
   it('preserves every message across the split', () => {
-    const parts = renderTranscript(data({ messages: many }), { maxBytes: 200 * 1024 });
+    const parts = renderTranscript(data({ messages: many }), {
+      maxBytes: 200 * 1024,
+    });
     const total = parts.reduce((sum, part) => sum + part.messageCount, 0);
     expect(total).toBe(many.length);
   });
 
   it('names split files distinctly', () => {
     expect(transcriptFileName('transcript-general', 1, 1)).toBe('transcript-general.html');
-    expect(transcriptFileName('transcript-general', 2, 3)).toBe(
-      'transcript-general-part2of3.html',
-    );
+    expect(transcriptFileName('transcript-general', 2, 3)).toBe('transcript-general-part2of3.html');
 
     const parts = renderTranscript(data({ messages: many }), {
       maxBytes: 200 * 1024,
@@ -1018,7 +1089,10 @@ describe('branding and chrome options', () => {
     '<circle cx="5" cy="5" r="5" fill="currentColor"/></svg>';
 
   const render = (options: RenderTranscriptOptions): string =>
-    renderTranscript(data(), { maxBytes: BIG_BUDGET, ...options })[0]!.content.toString('utf8');
+    renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+      ...options,
+    })[0]!.content.toString('utf8');
 
   it('carries a provided logo in the header as well as the footer', () => {
     const html = render({ brand: { logoSvg: LOGO } });
@@ -1044,7 +1118,9 @@ describe('branding and chrome options', () => {
   });
 
   it('takes a custom footer line', () => {
-    const html = render({ brand: { footerText: 'Generated by CastCord Helper' } });
+    const html = render({
+      brand: { footerText: 'Generated by CastCord Helper' },
+    });
     expect(html).toContain('Generated by CastCord Helper');
     expect(html).not.toContain('Generated with discord-transcriber');
   });
@@ -1052,7 +1128,10 @@ describe('branding and chrome options', () => {
 
 describe('metadata panel and notices', () => {
   const render = (options: RenderTranscriptOptions): string =>
-    renderTranscript(data(), { maxBytes: BIG_BUDGET, ...options })[0]!.content.toString('utf8');
+    renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+      ...options,
+    })[0]!.content.toString('utf8');
 
   it('renders no panel unless entries are provided', () => {
     expect(render({})).not.toContain('class="panel"');
@@ -1091,7 +1170,11 @@ describe('metadata panel and notices', () => {
   it('keeps the line breaks of a multiline value', () => {
     const html = render({
       metadata: [
-        { label: 'Close reason', value: 'First paragraph.\nSecond paragraph.', wide: true },
+        {
+          label: 'Close reason',
+          value: 'First paragraph.\nSecond paragraph.',
+          wide: true,
+        },
       ],
     });
 
@@ -1276,7 +1359,10 @@ describe('day boundaries and split parts', () => {
     const html = renderTranscript(
       data({
         messages: [
-          message({ id: '900000000000000031', createdAt: new Date('2026-03-04T23:58:00.000Z') }),
+          message({
+            id: '900000000000000031',
+            createdAt: new Date('2026-03-04T23:58:00.000Z'),
+          }),
           message({
             id: '900000000000000032',
             createdAt: new Date('2026-03-05T00:02:00.000Z'),
@@ -1302,7 +1388,9 @@ describe('day boundaries and split parts', () => {
       }),
     );
 
-    const parts = renderTranscript(data({ messages: many }), { maxBytes: 120 * 1024 });
+    const parts = renderTranscript(data({ messages: many }), {
+      maxBytes: 120 * 1024,
+    });
     expect(parts.length).toBeGreaterThan(1);
 
     for (const part of parts) {
@@ -1326,7 +1414,10 @@ describe('day boundaries and split parts', () => {
     const second = message({
       id: '900000000000000042',
       content: 'word '.repeat(14000),
-      reference: reply({ messageId: '900000000000000041', excerpt: 'the first message' }),
+      reference: reply({
+        messageId: '900000000000000041',
+        excerpt: 'the first message',
+      }),
     });
 
     const parts = renderTranscript(data({ messages: [first, second] }), {
@@ -1436,7 +1527,11 @@ describe('command invocations, threads and boosts', () => {
   });
 
   it('words a boost the way the client does', () => {
-    const html = renderOne({ content: '', system: true, systemAction: 'boostedTier2' });
+    const html = renderOne({
+      content: '',
+      system: true,
+      systemAction: 'boostedTier2',
+    });
 
     expect(html).toContain('just boosted the server! The server has achieved Level 2!');
     expect(html).toContain('class="system-icon"');
@@ -1449,7 +1544,14 @@ describe('embed anatomy', () => {
       data({
         messages: [
           message({
-            embeds: [mediaEmbed({ kind: 'rich', url: null, thumbnailUrl: null, ...overrides })],
+            embeds: [
+              mediaEmbed({
+                kind: 'rich',
+                url: null,
+                thumbnailUrl: null,
+                ...overrides,
+              }),
+            ],
           }),
         ],
       }),
@@ -1506,7 +1608,9 @@ describe('audio and video attachments', () => {
 
   it('plays a video inline and allows it through media-src', () => {
     const html = renderTranscript(
-      data({ messages: [message({ attachments: [attachment('video/mp4', 'clip.mp4')] })] }),
+      data({
+        messages: [message({ attachments: [attachment('video/mp4', 'clip.mp4')] })],
+      }),
       { maxBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -1517,7 +1621,13 @@ describe('audio and video attachments', () => {
 
   it('plays a voice message inline', () => {
     const html = renderTranscript(
-      data({ messages: [message({ attachments: [attachment('audio/ogg', 'voice-message.ogg')] })] }),
+      data({
+        messages: [
+          message({
+            attachments: [attachment('audio/ogg', 'voice-message.ogg')],
+          }),
+        ],
+      }),
       { maxBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -1530,7 +1640,10 @@ describe('audio and video attachments', () => {
         messages: [
           message({
             attachments: [
-              { ...attachment('video/mp4', 'clip.mp4'), url: 'https://evil.example.com/clip.mp4' },
+              {
+                ...attachment('video/mp4', 'clip.mp4'),
+                url: 'https://evil.example.com/clip.mp4',
+              },
             ],
           }),
         ],
@@ -1553,9 +1666,7 @@ describe('favicon', () => {
       favicon: 'https://cdn.discordapp.com/icons/1/guild.png',
     })[0]!.content.toString('utf8');
 
-    expect(html).toContain(
-      '<link rel="icon" href="https://cdn.discordapp.com/icons/1/guild.png">',
-    );
+    expect(html).toContain('<link rel="icon" href="https://cdn.discordapp.com/icons/1/guild.png">');
   });
 
   it('drops a favicon off the allowlist', () => {
@@ -1571,7 +1682,9 @@ describe('favicon', () => {
 
 describe('footer', () => {
   it('states how many messages were exported', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxBytes: BIG_BUDGET,
+    })[0]!.content.toString('utf8');
     expect(html).toContain('Exported 1 message ·');
   });
 });
@@ -1633,7 +1746,11 @@ describe('forwarded messages', () => {
           message({
             id: '900000000000000078',
             content: '',
-            forwarded: { ...forward, originMessageId: '900000000000000077', originUrl: null },
+            forwarded: {
+              ...forward,
+              originMessageId: '900000000000000077',
+              originUrl: null,
+            },
           }),
         ],
       }),
@@ -1650,7 +1767,11 @@ describe('forwarded messages', () => {
         messages: [
           message({
             content: '',
-            forwarded: { ...forward, originMessageId: null, originUrl: 'javascript:alert(1)' },
+            forwarded: {
+              ...forward,
+              originMessageId: null,
+              originUrl: 'javascript:alert(1)',
+            },
           }),
         ],
       }),
