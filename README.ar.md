@@ -10,7 +10,7 @@
 
 </div>
 
-```ts
+```js
 import { createTranscript } from 'discord-transcriber';
 
 const transcript = await createTranscript(channel);
@@ -20,6 +20,22 @@ for (const file of transcript.files) {
   await logChannel.send({ files: [file] });
 }
 ```
+
+<div dir="rtl">
+
+جافاسكربت عادية في كل مكان — كل الأمثلة في هذا الملف JS. تستخدم CommonJS؟ نفس السطر:
+
+</div>
+
+```js
+const { createTranscript } = require('discord-transcriber');
+```
+
+<div dir="rtl">
+
+ومستخدمو TypeScript يحصلون على تعريفات الأنواع كاملة تلقائيًا، للـ`import` والـ`require` معًا.
+
+</div>
 
 <div dir="rtl">
 
@@ -45,7 +61,7 @@ npm install discord-transcriber
 
 > **⚠️ صلاحية Message Content مطلوبة.** ديسكورد يحجب `content` و`embeds` و`attachments` و`components` من سجل الرسائل عن أي تطبيق بدون صلاحية **Message Content** المميزة. بدونها تصل كل رسالة لم يكتبها بوتك فارغة وتظهر النسخة فقاعات خاوية — بلا أي خطأ. فعّلها من صفحة **Bot** في [بوابة المطورين](https://discord.com/developers/applications) **وأعلنها** في العميل:
 >
-> ```ts
+> ```js
 > new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent] });
 > ```
 
@@ -55,7 +71,7 @@ npm install discord-transcriber
 
 </div>
 
-```ts
+```js
 import { createTranscript } from 'discord-transcriber';
 
 const transcript = await createTranscript(channel, {
@@ -77,7 +93,7 @@ transcript.truncated;    // true إذا كانت القناة تحوي أكثر 
 
 </div>
 
-```ts
+```js
 const [first, ...rest] = transcript.files;
 await logChannel.send({ content: 'Transcript', files: [first] });
 for (const file of rest) await logChannel.send({ files: [file] });
@@ -91,7 +107,7 @@ for (const file of rest) await logChannel.send({ files: [file] });
 
 </div>
 
-```ts
+```js
 await createTranscript(channel, {
   brand: {
     name: 'CastCord Support',           // سطر بارز فوق اسم القناة
@@ -112,7 +128,7 @@ await createTranscript(channel, {
 
 </div>
 
-```ts
+```js
 await createTranscript(channel, {
   metadata: [
     { label: 'القسم', value: 'الدعم الفني', icon: 'tag' },

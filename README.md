@@ -15,7 +15,7 @@ players, thread markers, reactions, stickers, system events (pins, joins,
 boosts), edited/pinned markers and day dividers, all in Discord's own
 palette, spacing and typography.
 
-```ts
+```js
 import { createTranscript } from 'discord-transcriber';
 
 const transcript = await createTranscript(channel);
@@ -25,6 +25,16 @@ for (const file of transcript.files) {
   await logChannel.send({ files: [file] });
 }
 ```
+
+Plain JavaScript everywhere — every example in this document is JS. Using
+CommonJS? Same one line:
+
+```js
+const { createTranscript } = require('discord-transcriber');
+```
+
+TypeScript users get complete type definitions out of the box, for both
+`import` and `require`.
 
 ## Why this one
 
@@ -67,7 +77,7 @@ Requires Node.js 20+ and discord.js v14.19+ (peer dependency).
 > the [Developer Portal](https://discord.com/developers/applications) *and*
 > declare it in your client:
 >
-> ```ts
+> ```js
 > new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent] });
 > ```
 
@@ -75,7 +85,7 @@ Requires Node.js 20+ and discord.js v14.19+ (peer dependency).
 
 ### The one-call path
 
-```ts
+```js
 import { createTranscript } from 'discord-transcriber';
 
 const transcript = await createTranscript(channel, {
@@ -96,7 +106,7 @@ channels, threads, and voice/stage text chats.
 Send one file per message — Discord's upload limit applies to the whole
 request:
 
-```ts
+```js
 const [first, ...rest] = transcript.files;
 await logChannel.send({ content: 'Transcript', files: [first] });
 for (const file of rest) await logChannel.send({ files: [file] });
@@ -104,7 +114,7 @@ for (const file of rest) await logChannel.send({ files: [file] });
 
 Or write the files to disk:
 
-```ts
+```js
 import { writeFile } from 'node:fs/promises';
 for (const part of transcript.parts) {
   await writeFile(part.filename, part.content);
@@ -116,7 +126,7 @@ for (const part of transcript.parts) {
 The conversation always keeps Discord's look. The document chrome around it —
 header, accent colour, footer — is yours:
 
-```ts
+```js
 await createTranscript(channel, {
   brand: {
     name: 'CastCord Support',          // uppercase line above the channel name
@@ -135,7 +145,7 @@ await createTranscript(channel, {
 Record the facts that live nowhere else in the document — who opened a
 ticket, why it closed, what a form answered:
 
-```ts
+```js
 await createTranscript(channel, {
   metadata: [
     { label: 'Category',  value: 'Technical Support', icon: 'tag' },
@@ -168,7 +178,7 @@ Icons: `tag` · `text` · `person` · `shield` · `people` · `clock` · `lock` 
 
 ### The layers underneath
 
-```ts
+```js
 import {
   collectMessages,     // channel -> plain data (messages, mentions, truncated)
   collectFromMessages, // messages you already hold -> the same plain data
