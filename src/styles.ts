@@ -431,6 +431,24 @@ a.system-subject:hover { text-decoration: underline; }
 .attachment-video { max-width: min(550px, 100%); border-radius: 8px; display: block; background: var(--surface-deep); }
 .attachment-audio { width: min(400px, 100%); display: block; }
 
+/* A forwarded message: the label, the quoted material, its origin. */
+.forward {
+  border-inline-start: 2px solid var(--quote-border);
+  padding: 2px 0 2px 12px;
+  margin-top: 2px;
+}
+.forward-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.forward-label svg { flex: none; }
+.forward-origin { color: var(--text-muted); font-size: 12px; margin-top: 4px; }
+
 /* The chip Discord puts under a message a thread hangs off. */
 .thread-chip {
   display: inline-flex;

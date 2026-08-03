@@ -1,7 +1,10 @@
 # Changelog
 
-## 1.0.1
+## 1.1.0
 
+- render forwarded messages: snapshot content, attachments, embeds, stickers
+  and components, with a Forwarded label and the origin channel and time
+- a forward's reference no longer renders as a broken reply row
 - docs: real names in all examples
 
 ## 1.0.0

@@ -262,6 +262,27 @@ export interface TranscriptThreadSummary {
   readonly messageCount: number | null;
 }
 
+/**
+ * A forwarded message's snapshot.
+ *
+ * Discord sends a forward with empty `content`: the forwarded material lives
+ * in a message snapshot, and the message reference points at the original -
+ * which is usually in another channel entirely. Treating it like a reply
+ * renders a bare "unknown message" row and an empty bubble, so a forward is
+ * carried as its own thing.
+ */
+export interface TranscriptForward {
+  readonly content: string;
+  readonly attachments: readonly TranscriptAttachment[];
+  readonly embeds: readonly TranscriptEmbed[];
+  readonly stickers: readonly TranscriptSticker[];
+  readonly components: readonly TranscriptLayoutComponent[];
+  /** Name of the channel the message was forwarded from, when resolvable. */
+  readonly originChannelName: string | null;
+  /** When the original message was sent, when the snapshot carries it. */
+  readonly originTimestamp: Date | null;
+}
+
 export interface TranscriptMessage {
   readonly id: string;
   readonly author: TranscriptAuthor;
@@ -283,6 +304,8 @@ export interface TranscriptMessage {
   /** True when the message was sent with the IsComponentsV2 flag. */
   readonly componentsV2: boolean;
   readonly reference: TranscriptReference | null;
+  /** Set when the message forwards another message. */
+  readonly forwarded: TranscriptForward | null;
   /** Set when the message is an application's reply to a slash command. */
   readonly interaction: TranscriptCommandInteraction | null;
   /** Set when a thread hangs off this message. */

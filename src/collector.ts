@@ -16,6 +16,7 @@ import type {
   TranscriptEmbed,
   TranscriptEmbedKind,
   TranscriptFile,
+  TranscriptForward,
   TranscriptLayoutActionRow,
   TranscriptLayoutComponent,
   TranscriptMedia,
@@ -174,7 +175,7 @@ async function processMessages(
   }
 
   const messages = kept.map((message, index) =>
-    toTranscriptMessage(message, summaries, kept[index - 1]),
+    toTranscriptMessage(message, summaries, kept[index - 1], channel),
   );
 
   return { messages, mentions: await buildMentionIndex(kept, channel) };
@@ -275,6 +276,10 @@ function mentionBearingText(message: Message<true>): string[] {
   // are exactly the ones Discord leaves out of `mentions`.
   texts.push(...textDisplayContents(rawComponents(message)));
 
+  // A forward carries its words in the snapshot, not in `content`.
+  const snapshot = firstSnapshot(message);
+  if (snapshot?.content !== undefined) texts.push(snapshot.content);
+
   return texts;
 }
 
@@ -340,8 +345,13 @@ function toTranscriptMessage(
   message: Message<true>,
   summaries: Map<string, ReferenceSummary>,
   previous: Message<true> | undefined,
+  channel: GuildTextBasedChannel,
 ): TranscriptMessage {
-  const reference = toReference(message, summaries);
+  const forwarded = toForward(message, channel);
+  // A forward's reference points at the original message - usually in another
+  // channel entirely - so treating it as a reply row would only ever produce
+  // "message not included in this transcript".
+  const reference = forwarded === null ? toReference(message, summaries) : null;
 
   return {
     id: message.id,
@@ -356,6 +366,7 @@ function toTranscriptMessage(
     components: toComponentTree(rawComponents(message), 0),
     componentsV2: message.flags?.has(MessageFlags.IsComponentsV2) ?? false,
     reference,
+    forwarded,
     interaction: toInteraction(message),
     thread: toThread(message),
     reactions: toReactions(message),
@@ -766,7 +777,9 @@ function textDisplayContents(components: readonly RawComponent[], depth = 0): st
  */
 function messageText(message: Message<true>): string {
   if (message.content.trim() !== '') return message.content;
-  return textDisplayContents(rawComponents(message)).join(' ');
+  const fromComponents = textDisplayContents(rawComponents(message)).join(' ');
+  if (fromComponents.trim() !== '') return fromComponents;
+  return firstSnapshot(message)?.content ?? '';
 }
 
 const MEDIA_COMPONENTS: ReadonlySet<number> = new Set([
@@ -789,6 +802,85 @@ function hasComponentMedia(components: readonly RawComponent[], depth = 0): bool
     }
     return false;
   });
+}
+
+/** `MessageReferenceType.Forward` - matched numerically so older peer
+ * versions that predate the enum member still compile. */
+const FORWARD_REFERENCE_TYPE = 1;
+
+/**
+ * The narrow structural surface of a discord.js MessageSnapshot this
+ * collector reads.
+ */
+interface RawSnapshot {
+  readonly content?: string;
+  readonly embeds?: readonly unknown[];
+  readonly attachments?: unknown;
+  readonly stickers?: unknown;
+  readonly components?: readonly RawComponent[];
+  readonly createdAt?: Date;
+  readonly createdTimestamp?: number;
+}
+
+function firstSnapshot(message: Message<true>): RawSnapshot | null {
+  const snaps = (message as unknown as { messageSnapshots?: unknown }).messageSnapshots;
+  if (!snaps) return null;
+  const first = (snaps as { first?: () => RawSnapshot | undefined }).first;
+  if (typeof first === 'function') return first.call(snaps) ?? null;
+  if (snaps instanceof Map) return (snaps.values().next().value as RawSnapshot | undefined) ?? null;
+  return null;
+}
+
+function collectionValues(value: unknown): unknown[] {
+  if (value instanceof Map) return [...value.values()];
+  if (Array.isArray(value)) return [...value];
+  if (typeof (value as { values?: unknown })?.values === 'function') {
+    return [...(value as { values: () => Iterable<unknown> }).values()];
+  }
+  return [];
+}
+
+/**
+ * Reads a forward's snapshot into plain data, reusing the same conversions the
+ * message body gets. Returns null for anything that is not a forward; a
+ * forward whose snapshot Discord did not deliver degrades to an empty one, so
+ * the "Forwarded" marker still appears rather than a blank bubble.
+ */
+function toForward(
+  message: Message<true>,
+  channel: GuildTextBasedChannel,
+): TranscriptForward | null {
+  const referenceType = (message.reference as unknown as { type?: number } | null)?.type;
+  const snapshot = firstSnapshot(message);
+  if (referenceType !== FORWARD_REFERENCE_TYPE && snapshot === null) return null;
+
+  const originChannelId = message.reference?.channelId;
+  // Structural read: hand-built channel objects need not model the cache.
+  const origin =
+    originChannelId === undefined
+      ? undefined
+      : channel.guild.channels?.cache?.get(originChannelId);
+
+  return {
+    content: snapshot?.content ?? '',
+    attachments: collectionValues(snapshot?.attachments).map((attachment) =>
+      toAttachment(attachment as Parameters<typeof toAttachment>[0]),
+    ),
+    embeds: (snapshot?.embeds ?? []).map((embed) =>
+      toEmbed(embed as Parameters<typeof toEmbed>[0]),
+    ),
+    stickers: collectionValues(snapshot?.stickers).map((sticker) =>
+      toSticker(sticker as Parameters<typeof toSticker>[0]),
+    ),
+    components: toComponentTree(snapshot?.components ?? [], 0),
+    originChannelName: origin !== undefined && 'name' in origin ? origin.name : null,
+    originTimestamp:
+      snapshot?.createdAt instanceof Date
+        ? snapshot.createdAt
+        : typeof snapshot?.createdTimestamp === 'number'
+          ? new Date(snapshot.createdTimestamp)
+          : null,
+  };
 }
 
 function toComponent(component: RawComponent): TranscriptComponent | null {

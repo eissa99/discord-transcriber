@@ -36,6 +36,7 @@ function message(overrides: Partial<TranscriptMessage> = {}): TranscriptMessage 
     components: [],
     componentsV2: false,
     reference: null,
+    forwarded: null,
     interaction: null,
     thread: null,
     reactions: [],
@@ -1518,5 +1519,52 @@ describe('footer', () => {
   it('states how many messages were exported', () => {
     const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
     expect(html).toContain('Exported 1 message ·');
+  });
+});
+
+describe('forwarded messages', () => {
+  const forward = {
+    content: 'Welcome to **Blocks** Discord Support',
+    attachments: [],
+    embeds: [],
+    stickers: [],
+    components: [],
+    originChannelName: 'welcome',
+    originTimestamp: new Date('2026-03-01T05:04:00.000Z'),
+  };
+
+  it('renders the forwarded material with its label and origin', () => {
+    const html = renderTranscript(
+      data({ messages: [message({ content: '', forwarded: forward })] }),
+      { maxBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).toContain('class="forward"');
+    expect(html).toContain('Forwarded');
+    expect(html).toContain('<strong>Blocks</strong>');
+    expect(html).toContain('#welcome · 2026-03-01 05:04:00 UTC');
+    // A forward is not a reply: no dead "unknown message" row.
+    expect(html).not.toContain('not included in this transcript');
+  });
+
+  it('escapes hostile forwarded content', () => {
+    const html = renderTranscript(
+      data({
+        messages: [
+          message({
+            content: '',
+            forwarded: {
+              ...forward,
+              content: '<script>alert(1)</script>',
+              originChannelName: '"><img onerror=x>',
+            },
+          }),
+        ],
+      }),
+      { maxBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).not.toContain('<script>alert');
+    expect(html).not.toContain('onerror=');
   });
 });

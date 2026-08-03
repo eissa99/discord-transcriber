@@ -349,3 +349,36 @@ describe('interactions and threads', () => {
     expect(collected.messages[0]!.thread).toEqual({ name: 'side-discussion', messageCount: 12 });
   });
 });
+
+describe('forwarded messages', () => {
+  it('reads the snapshot and drops the pseudo-reply', async () => {
+    const forwarded = {
+      ...fakeMessage({ id: '900000000000000009', content: '' }),
+      reference: { messageId: '111111111111111111', channelId: '222222222222222222', type: 1 },
+      messageSnapshots: new Map([
+        [
+          '111111111111111111',
+          {
+            content: 'Welcome to the support server!',
+            embeds: [],
+            attachments: new Map(),
+            stickers: new Map(),
+            components: [],
+            createdAt: new Date('2026-07-25T05:04:00.000Z'),
+          },
+        ],
+      ]),
+    } as unknown as Message<true>;
+
+    const { channel } = fakeChannel({ messages: [forwarded] });
+    const collected = await collectMessages(channel, {});
+    const collectedMessage = collected.messages[0]!;
+
+    expect(collectedMessage.forwarded?.content).toBe('Welcome to the support server!');
+    expect(collectedMessage.forwarded?.originTimestamp?.toISOString()).toBe(
+      '2026-07-25T05:04:00.000Z',
+    );
+    // The forward's reference must not become a broken reply row.
+    expect(collectedMessage.reference).toBeNull();
+  });
+});

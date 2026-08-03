@@ -42,6 +42,7 @@ const base = {
   stickers: [],
   actionRows: [],
   reference: null,
+  forwarded: null,
   reactions: [],
   system: false,
   systemAction: null,
@@ -203,6 +204,31 @@ const messages = [
   },
   {
     ...base,
+    id: '900000000000000009',
+    author: _7sO,
+    createdAt: at(23),
+    // A forwarded message: the material lives in the snapshot, not in content.
+    content: '',
+    forwarded: {
+      content: `To open a ticket press the button 🎫
+Welcome to **CastCord** Support!`,
+      attachments: [],
+      embeds: [],
+      stickers: [],
+      components: [
+        {
+          kind: 'actionRow',
+          components: [
+            { kind: 'button', label: 'Open Ticket', style: 'primary', disabled: false, url: null, emoji: null },
+          ],
+        },
+      ],
+      originChannelName: '「🌐」welcome',
+      originTimestamp: new Date(Date.UTC(2026, 6, 24, 5, 4)),
+    },
+  },
+  {
+    ...base,
     id: '900000000000000008',
     author: helper,
     createdAt: at(25),
@@ -238,7 +264,7 @@ const parts = renderTranscript(
       { label: 'Category', value: 'Technical Support', icon: 'tag' },
       { label: 'Opened by', value: '7sO (7so)', icon: 'person' },
       { label: 'Handled by', value: 'Eissa (eissa)', icon: 'shield' },
-      { label: 'Messages', value: '8', icon: 'chat' },
+      { label: 'Messages', value: '9', icon: 'chat' },
       { label: 'Resolution', value: 'Fixed by updating to version 4.2.2.', icon: 'note', wide: true },
     ],
   },

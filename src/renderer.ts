@@ -21,6 +21,7 @@ import type {
   TranscriptEmbed,
   TranscriptEmbedField,
   TranscriptFile,
+  TranscriptForward,
   TranscriptLayoutActionRow,
   TranscriptLayoutComponent,
   TranscriptMedia,
@@ -434,6 +435,10 @@ function renderMessage(
     );
   }
 
+  if (message.forwarded) {
+    parts.push(renderForward(message.forwarded, mentions));
+  }
+
   // Rendered up front because whether the body shows its URL depends on whether
   // an embed actually displayed the media that URL points at.
   const embeds = message.embeds.map((embed) => renderEmbed(embed, mentions));
@@ -503,6 +508,53 @@ function renderInteraction(interaction: TranscriptCommandInteraction): string {
       : `<img class="avatar-small" src="${escapeHtml(avatar)}" alt="" loading="lazy">`) +
     `<span class="name">${escapeHtml(interaction.userName)}</span>` +
     `<span class="excerpt">used <span class="mention">/${escapeHtml(interaction.commandName)}</span></span>` +
+    '</div>'
+  );
+}
+
+/** The share-arrow glyph Discord puts beside the Forwarded label. */
+const FORWARD_ICON =
+  '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">' +
+  '<path fill="currentColor" d="M4 18v-4a6 6 0 0 1 6-6h6.6l-3.3-3.3a1 1 0 0 1 1.4-1.4l5 5a1 1 0 0 1 0 1.4l-5 5a1 1 0 0 1-1.4-1.4L16.6 10H10a4 4 0 0 0-4 4v4a1 1 0 1 1-2 0Z"/>' +
+  '</svg>';
+
+/**
+ * A forwarded message, as the client draws it: a "Forwarded" label, the
+ * snapshot's material inside a quoted block, and the origin - channel and
+ * time - beneath it.
+ */
+function renderForward(forward: TranscriptForward, mentions: MentionIndex): string {
+  const parts: string[] = [];
+
+  if (forward.content.trim() !== '') {
+    parts.push(`<div class="content" dir="auto">${renderMarkdown(forward.content, mentions)}</div>`);
+  }
+  if (forward.attachments.length > 0) {
+    parts.push(
+      `<div class="attachments">${forward.attachments.map(renderAttachment).join('')}</div>`,
+    );
+  }
+  if (forward.stickers.length > 0) {
+    parts.push(`<div class="stickers">${forward.stickers.map(renderSticker).join('')}</div>`);
+  }
+  for (const embed of forward.embeds) {
+    parts.push(renderEmbed(embed, mentions).html);
+  }
+  for (const component of forward.components) {
+    parts.push(renderLayoutComponent(component, mentions));
+  }
+
+  const origin: string[] = [];
+  if (forward.originChannelName !== null) origin.push(`#${forward.originChannelName}`);
+  if (forward.originTimestamp !== null) origin.push(formatDate(forward.originTimestamp));
+  const footer =
+    origin.length === 0 ? '' : `<div class="forward-origin">${escapeHtml(origin.join(' · '))}</div>`;
+
+  return (
+    '<div class="forward">' +
+    `<div class="forward-label">${FORWARD_ICON}Forwarded</div>` +
+    parts.join('') +
+    footer +
     '</div>'
   );
 }

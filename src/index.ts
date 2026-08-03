@@ -46,6 +46,7 @@ export type {
   TranscriptEmbedField,
   TranscriptEmbedKind,
   TranscriptFile,
+  TranscriptForward,
   TranscriptLayoutActionRow,
   TranscriptLayoutComponent,
   TranscriptMedia,
