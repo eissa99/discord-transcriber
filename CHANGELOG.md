@@ -19,7 +19,7 @@ Initial release.
 - Full Components V2 support: containers, sections, text displays, media
   galleries, file cards, separators — including mention resolution and
   reply previews sourced from TextDisplay content.
-- Slash-command invocation rows ("Alice used /close"), thread markers, and
+- Slash-command invocation rows ("Eissa used /close"), thread markers, and
   boost/pin/join system messages.
 - Inline audio and video players, admitted by a `media-src` allowlist of
   Discord CDN hosts only.
