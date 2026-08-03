@@ -29,17 +29,21 @@ TypeScript users get complete type definitions automatically.
 
 Everything, the way Discord shows it:
 
-- Messages with full Discord markdown, custom emoji, and mentions resolved to
-  real names
+- Messages with complete Discord markdown — headers, subtext, nested lists,
+  quotes, code, spoilers (click to reveal) — plus custom emoji and mentions
+  resolved to real names
 - Replies with working jump links, and message grouping exactly like the
   client
+- Forwarded messages, with a pressable origin row that jumps to the original
+  in-file or opens it on Discord
 - Attachments — images inline, audio and video with players, other files as
   download cards
 - Rich embeds, buttons and select menus
 - Components V2 layouts: containers, sections, text displays, media
   galleries, files, separators
-- Slash-command rows ("Eissa used /close"), thread markers, reactions,
-  stickers
+- Slash-command rows ("Eissa used /close"), reactions, stickers
+- Thread cards with the thread's name, message count, and a preview of its
+  latest message
 - System events (pins, joins, boosts), edited and pinned markers, day
   dividers
 
