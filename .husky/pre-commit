@@ -1,1 +1,2 @@
-npm run prepublishOnly
+npx lint-staged
+npm run check
