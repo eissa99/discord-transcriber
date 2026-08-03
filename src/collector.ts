@@ -220,6 +220,7 @@ async function buildMentionIndex(
   }
 
   await resolveSuppressedUserMentions(messages, channel, users);
+  resolveSuppressedRoleAndChannelMentions(messages, channel, roles, channels);
 
   // The channel itself is frequently referenced from inside its own
   // conversation.
@@ -263,6 +264,50 @@ async function resolveSuppressedUserMentions(
     const name = resolved[index];
     if (name !== null && name !== undefined) users[id] = name;
   });
+}
+
+const ROLE_MENTION_PATTERN = /<@&(\d{17,20})>/g;
+const CHANNEL_MENTION_PATTERN = /<#(\d{17,20})>/g;
+
+/**
+ * Names roles and channels whose mentions never reached `message.mentions` -
+ * suppressed through `allowed_mentions` exactly like user pings. Both resolve
+ * from the gateway caches, so there is no REST cost and no cap; a role that
+ * is not in the cache was deleted, and its ID is the only truthful thing
+ * left to show.
+ */
+function resolveSuppressedRoleAndChannelMentions(
+  messages: readonly Message<true>[],
+  channel: GuildTextBasedChannel,
+  roles: Record<string, ResolvedRole>,
+  channels: Record<string, string>,
+): void {
+  const guild = channel.guild as unknown as {
+    roles?: { cache?: ReadonlyMap<string, { name?: string; hexColor?: string }> };
+    channels?: { cache?: ReadonlyMap<string, { name?: string }> };
+  };
+
+  for (const message of messages) {
+    for (const text of mentionBearingText(message)) {
+      for (const match of text.matchAll(ROLE_MENTION_PATTERN)) {
+        const id = match[1];
+        if (id === undefined || roles[id] !== undefined) continue;
+        const role = guild.roles?.cache?.get(id);
+        if (role?.name !== undefined) {
+          roles[id] = {
+            name: role.name,
+            color: role.hexColor === '#000000' ? null : (role.hexColor ?? null),
+          };
+        }
+      }
+      for (const match of text.matchAll(CHANNEL_MENTION_PATTERN)) {
+        const id = match[1];
+        if (id === undefined || channels[id] !== undefined) continue;
+        const name = guild.channels?.cache?.get(id)?.name;
+        if (name !== undefined) channels[id] = name;
+      }
+    }
+  }
 }
 
 /** Every place a `<@id>` can appear in a message the transcript renders. */

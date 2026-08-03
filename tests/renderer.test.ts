@@ -1613,3 +1613,21 @@ describe('forwarded messages', () => {
     expect(html).not.toContain('onerror=');
   });
 });
+
+describe('spoilers', () => {
+  it('reveals on click, with hover only as the no-script fallback', () => {
+    const html = renderTranscript(
+      data({ messages: [message({ content: 'the answer is ||secret||' })] }),
+      { maxBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).toContain('<span class="spoiler">secret</span>');
+    // Pressable, as in the client: pointer cursor, revealed by the script.
+    expect(html).toContain('cursor: pointer');
+    expect(html).toContain('.spoiler.revealed');
+    expect(html).toContain("classList.add('revealed')");
+    // The hover reveal survives only for readers whose scripts are blocked.
+    expect(html).toContain('body:not(.js) .spoiler:hover');
+    expect(html.split('.spoiler:hover').length - 1).toBe(1);
+  });
+});

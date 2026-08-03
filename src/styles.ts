@@ -304,13 +304,21 @@ pre.code-block code {
   padding: 0 2px;
 }
 
+/*
+ * A spoiler reveals on click, as the client's does: the document's script
+ * adds the revealed class, and the js class it sets on <body> is what turns
+ * the hover fallback off. With scripts blocked there is no click handler, so the
+ * hover fallback is what keeps the text reachable.
+ */
 .spoiler {
   background: var(--spoiler-bg);
   border-radius: 3px;
   padding: 0 2px;
   color: transparent;
+  cursor: pointer;
 }
-.spoiler:hover { background: rgba(32, 34, 37, .5); color: var(--text); }
+.spoiler.revealed { background: rgba(32, 34, 37, .5); color: var(--text); cursor: auto; }
+body:not(.js) .spoiler:hover { background: rgba(32, 34, 37, .5); color: var(--text); }
 
 img.emoji {
   width: 1.375em;

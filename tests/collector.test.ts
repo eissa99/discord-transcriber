@@ -77,6 +77,10 @@ interface ChannelOptions {
   readonly members?: Readonly<Record<string, string>>;
   /** User lookups that succeed once the member lookup has failed. */
   readonly users?: Readonly<Record<string, string>>;
+  /** Roles in the guild cache, by ID. */
+  readonly guildRoles?: Readonly<Record<string, { name: string; hexColor: string }>>;
+  /** Channels in the guild cache, by ID. */
+  readonly guildChannels?: Readonly<Record<string, string>>;
 }
 
 function fakeChannel(options: ChannelOptions) {
@@ -101,7 +105,15 @@ function fakeChannel(options: ChannelOptions) {
     id: CHANNEL_ID,
     name: 'ticket-1042',
     messages: { fetch: () => Promise.resolve(page) },
-    guild: { members: { cache: new Map(), fetch: memberFetch } },
+    guild: {
+      members: { cache: new Map(), fetch: memberFetch },
+      roles: { cache: new Map(Object.entries(options.guildRoles ?? {})) },
+      channels: {
+        cache: new Map(
+          Object.entries(options.guildChannels ?? {}).map(([id, name]) => [id, { name }]),
+        ),
+      },
+    },
     client: { users: { cache: new Map(), fetch: userFetch } },
   } as unknown as TextChannel;
 
@@ -193,6 +205,36 @@ describe('mention names in a transcript', () => {
     await collectMessages(channel, { limit: 100 });
 
     expect(memberFetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('suppressed role and channel mentions', () => {
+  it('resolves them from the guild caches', async () => {
+    const { channel } = fakeChannel({
+      messages: [
+        fakeMessage({ content: 'ping <@&500000000000000001> in <#600000000000000001>' }),
+      ],
+      guildRoles: { '500000000000000001': { name: 'Support Team', hexColor: '#11806a' } },
+      guildChannels: { '600000000000000001': 'general' },
+    });
+
+    const collected = await collectMessages(channel, {});
+
+    expect(collected.mentions.roles['500000000000000001']).toEqual({
+      name: 'Support Team',
+      color: '#11806a',
+    });
+    expect(collected.mentions.channels['600000000000000001']).toBe('general');
+  });
+
+  it('leaves a deleted role as its ID', async () => {
+    const { channel } = fakeChannel({
+      messages: [fakeMessage({ content: '<@&500000000000000009>' })],
+    });
+
+    const collected = await collectMessages(channel, {});
+    // The renderer degrades this to an @id pill - the only truthful display.
+    expect(collected.mentions.roles['500000000000000009']).toBeUndefined();
   });
 });
 

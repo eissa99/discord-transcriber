@@ -7,6 +7,10 @@
 - a forward's reference no longer renders as a broken reply row
 - thread cards match the client: name, message count, and a preview of the
   thread's latest message (avatar, author colour, text, time)
+- role and channel mentions suppressed through `allowed_mentions` now resolve
+  from the guild caches instead of rendering as bare IDs
+- spoilers reveal on click with a pointer cursor, as the client's do; hover
+  reveal remains only as the no-script fallback
 - docs: real names in all examples
 
 ## 1.0.0

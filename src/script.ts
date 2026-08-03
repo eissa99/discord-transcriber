@@ -20,20 +20,29 @@ import { createHash } from 'node:crypto';
  *   - Every element it acts on is one the renderer emitted, with an ID the
  *     renderer validated as a snowflake.
  *
- * Progressive enhancement: the reply row is a real link to the same anchor, so
- * with scripts blocked entirely the jump still works - it just lands through
- * the address bar rather than scrolling to it.
+ * Three behaviours, all of them class toggles: it marks <body> as scripted
+ * (which switches spoilers from the hover fallback to click-to-reveal), it
+ * scrolls reply jumps smoothly, and it reveals a spoiler that is clicked.
+ *
+ * Progressive enhancement: the reply row is a real link to the same anchor,
+ * and without the `js` marker spoilers reveal on hover - so with scripts
+ * blocked entirely, everything stays reachable.
  */
 export const TRANSCRIPT_SCRIPT =
+  `document.body.classList.add('js');` +
   `document.addEventListener('click',function(e){` +
-  `var el=e.target instanceof Element?e.target.closest('[data-goto]'):null;` +
-  `if(!el)return;` +
-  `var to=document.getElementById('m'+el.getAttribute('data-goto'));` +
+  `var t=e.target instanceof Element?e.target:null;` +
+  `if(!t)return;` +
+  `var g=t.closest('[data-goto]');` +
+  `if(g){var to=document.getElementById('m'+g.getAttribute('data-goto'));` +
   `if(!to)return;` +
   `e.preventDefault();` +
   `to.scrollIntoView({behavior:'smooth',block:'center'});` +
   `to.classList.add('flash');` +
-  `setTimeout(function(){to.classList.remove('flash')},1200)` +
+  `setTimeout(function(){to.classList.remove('flash')},1200);` +
+  `return}` +
+  `var s=t.closest('.spoiler');` +
+  `if(s)s.classList.add('revealed')` +
   `});`;
 
 /** The `sha256-...` source expression that admits exactly the script above. */
