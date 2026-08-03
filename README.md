@@ -205,33 +205,6 @@ The collector also resolves mentions Discord leaves out of the payload (pings
 suppressed through `allowed_mentions` — which bot announcements routinely do),
 so `<@id>` renders as a name, not a number, capped at 50 extra lookups.
 
-## How it compares
-
-Measured against the two other transcript packages on npm (August 2026):
-
-| | **discord-transcriber** | discord-html-transcripts | discord-transcript-v2 |
-| --- | --- | --- | --- |
-| Reads offline, no CDN at view time | ✅ | ❌ loads its component runtime from jsDelivr¹ | ❌ jsDelivr¹ + Google Fonts |
-| Works with JavaScript disabled | ✅ | ❌ | ❌ |
-| Content-Security-Policy in the file | ✅ hash-locked | ❌ | ❌ |
-| Components V2 layouts | ✅ | ❌ | ✅ |
-| Stickers | ✅ | ❌ | ❌ |
-| Slash-command invocation rows | ✅ | ✅ | ✅ |
-| Inline audio/video players | ✅ | ✅ | ✅ |
-| Auto-split to the guild's upload limit | ✅ | ❌ | ❌ |
-| Discord-free render layer (store data, render later) | ✅ | ❌ | ❌ |
-| Runtime dependencies | 0 (discord.js peer only) | React SSR + 8 packages | React SSR + 8 packages |
-| Chrome branding / metadata panel / bilingual docs | ✅ | ❌ | ❌ |
-| `saveImages` (base64-inline media) | ❌ by design² | ✅ | ✅ |
-| Latest stable release working | ✅ | ⚠️ `latest` is deprecated as broken³ | ✅ (young, ~130 downloads/week) |
-
-¹ With their default `hydrate: false`, the page fetches its web-component
-runtime from `cdn.jsdelivr.net` when opened — no internet, no transcript.
-² Inlining media as data URIs balloons files past Discord's upload limits and
-forces `data:` into the image policy; see the note below on CDN expiry.
-³ Its npm `latest` (3.3.0) carries a deprecation notice directing users back
-to 3.2.0 (September 2023), which predates Components V2 entirely.
-
 ## Notes and limitations
 
 - **The Message Content intent is required** (see Install above). The package
