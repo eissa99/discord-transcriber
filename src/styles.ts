@@ -298,6 +298,10 @@ pre.code-block code {
 }
 .mention:hover { box-shadow: inset 0 0 0 999px rgba(255, 255, 255, .1); }
 
+/* An executed command: the apps glyph beside the name, inside the pill. */
+.command-mention { display: inline-flex; align-items: center; gap: 4px; }
+.command-mention svg { flex: none; }
+
 .timestamp-chip {
   background: rgba(151, 151, 159, .2);
   border-radius: 3px;

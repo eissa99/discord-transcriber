@@ -376,6 +376,7 @@ describe('interactions and threads', () => {
       commandName: 'close',
       userName: 'Eissa',
       userAvatarUrl: 'https://cdn.discordapp.com/avatars/2/e.png',
+      userColor: null,
     });
   });
 

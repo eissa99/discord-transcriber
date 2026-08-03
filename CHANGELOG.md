@@ -11,6 +11,8 @@
   from the guild caches instead of rendering as bare IDs
 - spoilers reveal on click with a pointer cursor, as the client's do; hover
   reveal remains only as the no-script fallback
+- the command-invocation row matches the current client: the apps glyph
+  beside the command name, and the invoker's name in their role colour
 - docs: real names in all examples
 
 ## 1.0.0

@@ -246,7 +246,7 @@ Welcome to **CastCord** Support!`,
     createdAt: at(25),
     content: 'Ticket closed by **Eissa**. A transcript of this channel has been saved.',
     // The row Discord shows above a slash-command reply: "Eissa used /close".
-    interaction: { commandName: 'close', userName: 'Eissa', userAvatarUrl: null },
+    interaction: { commandName: 'close', userName: 'Eissa', userAvatarUrl: null, userColor: '#f0a52a' },
   },
 ];
 

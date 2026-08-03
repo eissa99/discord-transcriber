@@ -416,7 +416,7 @@ function toTranscriptMessage(
     componentsV2: message.flags?.has(MessageFlags.IsComponentsV2) ?? false,
     reference,
     forwarded,
-    interaction: toInteraction(message),
+    interaction: toInteraction(message, channel),
     thread: toThread(message, threadPreviews.get(message.id) ?? null),
     reactions: toReactions(message),
     system: message.system,
@@ -451,16 +451,30 @@ const SYSTEM_ACTIONS = new Map<MessageType, TranscriptSystemAction>([
 interface RawInteraction {
   readonly commandName?: string;
   readonly user?: {
+    readonly id?: string;
     readonly username?: string;
     readonly displayName?: string;
     readonly displayAvatarURL?: (options?: object) => string;
   };
 }
 
-function toInteraction(message: Message<true>): TranscriptCommandInteraction | null {
+function toInteraction(
+  message: Message<true>,
+  channel: GuildTextBasedChannel,
+): TranscriptCommandInteraction | null {
   const raw =
     (message as unknown as { interaction?: RawInteraction | null }).interaction ?? null;
   if (raw === null) return null;
+
+  // The invoker's role colour, from the member cache - as on a reply row.
+  const memberHex =
+    raw.user?.id === undefined
+      ? undefined
+      : (
+          channel.guild.members?.cache?.get(raw.user.id) as
+            | { displayHexColor?: string }
+            | undefined
+        )?.displayHexColor;
 
   return {
     commandName: raw.commandName ?? 'command',
@@ -469,6 +483,7 @@ function toInteraction(message: Message<true>): TranscriptCommandInteraction | n
       typeof raw.user?.displayAvatarURL === 'function'
         ? raw.user.displayAvatarURL({ size: 32, extension: 'png' })
         : null,
+    userColor: memberHex !== undefined && memberHex !== '#000000' ? memberHex : null,
   };
 }
 

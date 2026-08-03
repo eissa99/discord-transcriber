@@ -1352,25 +1352,34 @@ describe('command invocations, threads and boosts', () => {
   it('shows who used which command above the reply', () => {
     const html = renderOne({
       interaction: {
-        commandName: 'close',
+        commandName: 'stats',
         userName: 'Eissa',
         userAvatarUrl: 'https://cdn.discordapp.com/avatars/2/e.png',
+        userColor: '#f0a52a',
       },
     });
 
     expect(html).toContain('message start has-reply');
-    expect(html).toContain('>Eissa</span>');
-    expect(html).toContain('used <span class="mention">/close</span>');
+    expect(html).toContain('style="color:#f0a52a">Eissa</span>');
+    // The apps glyph sits inside the mention-coloured chip, before the name.
+    expect(html).toContain('class="mention command-mention"');
+    expect(html).toContain('</svg>stats</span>');
   });
 
   it('escapes a hostile command invocation', () => {
     const payload = '<script>alert(1)</script>';
     const html = renderOne({
-      interaction: { commandName: payload, userName: payload, userAvatarUrl: 'javascript:x' },
+      interaction: {
+        commandName: payload,
+        userName: payload,
+        userAvatarUrl: 'javascript:x',
+        userColor: 'red;}x',
+      },
     });
 
     expect(html).not.toContain('<script>alert');
     expect(html).not.toContain('javascript:');
+    expect(html).not.toContain('red;}x');
   });
 
   it('marks the thread hanging off a message', () => {

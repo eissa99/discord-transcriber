@@ -254,6 +254,8 @@ export interface TranscriptCommandInteraction {
   readonly commandName: string;
   readonly userName: string;
   readonly userAvatarUrl: string | null;
+  /** The invoker's role colour, as on a reply row. */
+  readonly userColor: string | null;
 }
 
 /** The latest message in a thread, previewed on the thread card. */
