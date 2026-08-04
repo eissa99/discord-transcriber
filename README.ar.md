@@ -263,4 +263,8 @@ npm run demo    # يكتب examples/demo.html — افتحه في متصفحك
 
 صُنعت بـ ❤️ بواسطة [Eissa](https://github.com/eissa99)
 
+---
+
+*‏discord-transcriber مشروع مفتوح المصدر مستقل، لا تربطه أي صلة رسمية بشركة Discord.*
+
 </div>

@@ -257,3 +257,7 @@ npm run demo    # writes examples/demo.html — open it in your browser
 A star on [GitHub](https://github.com/eissa99/discord-transcriber) helps a lot — and if you'd like to support my work, I'm on [ko-fi](https://ko-fi.com/ieissa).
 
 Made with ❤️ by [Eissa](https://github.com/eissa99)
+
+---
+
+*discord-transcriber is an independent open-source project, not affiliated with or endorsed by Discord Inc.*
