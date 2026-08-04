@@ -79,7 +79,7 @@ npm install discord-transcriber
 
 <div dir="rtl">
 
-تتطلب Node.js 20+ و discord.js v14.19+ (اعتماد نظير).
+تتطلب Node.js 20+ و discord.js v14.19+ (اعتماد نظير) — أول إصدار يحمل Components V2 التي تعرضها النسخ. نسختك أقدم؟ يكفي أمر `npm install discord.js@latest`.
 
 > **⚠️ صلاحية Message Content مطلوبة.** بدون صلاحية **Message Content** المميزة يحجب ديسكورد `content` و`embeds` و`attachments` و`components` من سجل الرسائل، فتصل كل رسالة لم يكتبها بوتك فارغة — وتظهر النسخة فقاعات خاوية بلا أي خطأ. فعّلها من صفحة **Bot** في [بوابة المطورين](https://discord.com/developers/applications) **وأعلنها** في العميل:
 >

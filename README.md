@@ -79,7 +79,9 @@ All in Discord's own colours, spacing and typography.
 npm install discord-transcriber
 ```
 
-Requires Node.js 20+ and discord.js v14.19+ (peer dependency).
+Requires Node.js 20+ and discord.js v14.19+ (peer dependency) — the first
+release with Components V2, which transcripts render. On an older discord.js,
+`npm install discord.js@latest` brings you up.
 
 > **⚠️ Message Content intent — required.** Without the privileged **Message
 > Content** intent, Discord hides `content`, `embeds`, `attachments` and
