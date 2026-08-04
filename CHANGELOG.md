@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+- `renderTranscript`'s size option is renamed from `maxBytes` to
+  `maxFileBytes`, matching `createTranscript` — one name for the same knob
+  at every layer.
+
 ## 1.1.0
 
 - render forwarded messages: snapshot content, attachments, embeds, stickers

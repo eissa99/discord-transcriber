@@ -79,7 +79,7 @@ const DEFAULT_FOOTER = 'Generated with discord-transcriber';
 
 /** The render options with every default applied. */
 interface ResolvedOptions {
-  readonly maxBytes: number;
+  readonly maxFileBytes: number;
   readonly filenameBase: string;
   readonly title: string | null;
   readonly brandName: string | null;
@@ -95,7 +95,7 @@ interface ResolvedOptions {
 function resolveOptions(options: RenderTranscriptOptions): ResolvedOptions {
   const brand = options.brand ?? {};
   return {
-    maxBytes: options.maxBytes ?? Number.POSITIVE_INFINITY,
+    maxFileBytes: options.maxFileBytes ?? Number.POSITIVE_INFINITY,
     filenameBase: safeFileName(options.filename ?? 'transcript', 'transcript'),
     title: options.title ?? null,
     brandName: brand.name ?? null,
@@ -121,7 +121,7 @@ export function transcriptFileName(base: string, part: number, totalParts: numbe
 
 /**
  * Renders the transcript, splitting it into several complete standalone files
- * when it would exceed `maxBytes`.
+ * when it would exceed `maxFileBytes`.
  *
  * Splitting keeps transcripts as files. There is deliberately no fallback that
  * uploads them anywhere else or turns them into a link.
@@ -135,7 +135,7 @@ export function renderTranscript(
     renderDocument(data, '', { part: 1, totalParts: 9 }, resolved),
     'utf8',
   );
-  const budget = Math.max(64 * 1024, resolved.maxBytes - overhead);
+  const budget = Math.max(64 * 1024, resolved.maxFileBytes - overhead);
 
   const ranges = planParts(data, budget);
   const totalParts = ranges.length;

@@ -1,4 +1,4 @@
-﻿import { createHash } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { escapeHtml } from '../src/html.js';
 import { EMPTY_MENTIONS } from '../src/markdown.js';
@@ -80,7 +80,7 @@ const BIG_BUDGET = 8 * 1024 * 1024;
 
 describe('transcript rendering', () => {
   it('produces one standalone HTML document', () => {
-    const parts = renderTranscript(data(), { maxBytes: BIG_BUDGET });
+    const parts = renderTranscript(data(), { maxFileBytes: BIG_BUDGET });
 
     expect(parts).toHaveLength(1);
     const html = parts[0]!.content.toString('utf8');
@@ -94,12 +94,12 @@ describe('transcript rendering', () => {
   });
 
   it('titles the document after the channel and guild', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
     expect(html).toContain('<title>#support-1042 · Awesome Guild</title>');
   });
 
   it('takes a custom title', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET, title: 'Ticket 1042' })[0]!
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET, title: 'Ticket 1042' })[0]!
       .content.toString('utf8');
     expect(html).toContain('<title>Ticket 1042</title>');
   });
@@ -111,7 +111,7 @@ describe('transcript rendering', () => {
   });
 
   it('is self-contained: nothing is fetched, and styling is inline', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
 
     expect(html).not.toContain('javascript:');
     expect(html).toContain('<style>');
@@ -129,7 +129,7 @@ describe('transcript rendering', () => {
   });
 
   it('writes every full timestamp with its zone', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
 
     // Self-describing rather than explained by a note elsewhere, so a line
     // copied out of the document stays unambiguous. The generation instant in
@@ -139,14 +139,14 @@ describe('transcript rendering', () => {
   });
 
   it('carries no logo and no brand line unless one is provided', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
 
     expect(html).not.toContain('class="brand-mark"');
     expect(html).not.toContain('<div class="brand">');
   });
 
   it('declares a content security policy that admits only its own script', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
 
     expect(html).toContain('Content-Security-Policy');
     expect(html).toContain('default-src &#39;none&#39;');
@@ -162,7 +162,7 @@ describe('transcript rendering', () => {
   });
 
   it('ships the exact bytes its policy hashes', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
 
     // The hash is derived from the script constant, so a drift between the two
     // is impossible by construction - this guards the wiring, not the maths.
@@ -179,7 +179,7 @@ describe('transcript rendering', () => {
           message({ id: '900000000000000003', reference: reply() }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // `data-goto` is what the script acts on; `href` is the fallback, so a
@@ -257,7 +257,7 @@ describe('transcript rendering', () => {
         ],
       }),
       {
-        maxBytes: BIG_BUDGET,
+        maxFileBytes: BIG_BUDGET,
         title: payload,
         filename: '../../../etc/passwd',
         brand: { name: payload, footerText: payload, accentColor: 'red;}</style>' },
@@ -301,7 +301,7 @@ describe('transcript rendering', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('(edited)');
@@ -331,7 +331,7 @@ describe('transcript rendering', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('not included in this transcript');
@@ -339,13 +339,13 @@ describe('transcript rendering', () => {
 
   it('reports truncation to whoever reads the file', () => {
     const html = renderTranscript(data({ truncated: true }), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
     })[0]!.content.toString('utf8');
     expect(html).toContain('more messages than the transcript limit');
   });
 
   it('defaults the accent to Discord blurple', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
 
     // Scoped to the stylesheet variable: a message author's role colour is
     // unrelated data that also lands in the document.
@@ -355,7 +355,7 @@ describe('transcript rendering', () => {
 
   it('takes a custom accent for the chrome', () => {
     const html = renderTranscript(data(), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
       brand: { accentColor: '#9146FF' },
     })[0]!.content.toString('utf8');
 
@@ -365,7 +365,7 @@ describe('transcript rendering', () => {
 
   it('marks an application in Discord blurple, not in the accent', () => {
     const html = renderTranscript(data(), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
       brand: { accentColor: '#9146ff' },
     })[0]!.content.toString('utf8');
 
@@ -376,14 +376,14 @@ describe('transcript rendering', () => {
   });
 
   it('renders an empty channel without failing', () => {
-    const parts = renderTranscript(data({ messages: [] }), { maxBytes: BIG_BUDGET });
+    const parts = renderTranscript(data({ messages: [] }), { maxFileBytes: BIG_BUDGET });
     expect(parts).toHaveLength(1);
     expect(parts[0]!.content.toString('utf8')).toContain('contains no messages');
   });
 
   it('keeps the avatar clear of the reply row above it', () => {
     const html = renderTranscript(data({ messages: [message({ reference: reply() })] }), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
     })[0]!.content.toString('utf8');
 
     // Without the marker the avatar, which is positioned out of flow, is drawn
@@ -398,7 +398,7 @@ describe('transcript rendering', () => {
   it('names the attachment when the message replied to had no text', () => {
     const html = renderTranscript(
       data({ messages: [message({ reference: reply({ excerpt: '', hasMedia: true }) })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('Click to see attachment');
@@ -407,7 +407,7 @@ describe('transcript rendering', () => {
   it('leaves the quoted line empty when there was nothing to quote', () => {
     const html = renderTranscript(
       data({ messages: [message({ reference: reply({ excerpt: '', hasMedia: false }) })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).not.toContain('Click to see attachment');
@@ -417,7 +417,7 @@ describe('transcript rendering', () => {
   it('marks a reply to a bot the way Discord does', () => {
     const html = renderTranscript(
       data({ messages: [message({ reference: reply({ authorBot: true }) })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // Discord puts the app tag before the name in a reply and after it in the
@@ -428,7 +428,7 @@ describe('transcript rendering', () => {
   it('flags that the message replied to carried media', () => {
     const html = renderTranscript(
       data({ messages: [message({ reference: reply({ hasMedia: true }) })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('class="reply-media-icon"');
@@ -439,7 +439,7 @@ describe('transcript rendering', () => {
       data({
         messages: [message({ reference: reply({ resolved: false, hasMedia: true }) })],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // `hasMedia` is unknowable for a message that was never collected.
@@ -459,7 +459,7 @@ describe('embed fields', () => {
           message({ embeds: [fieldEmbed([{ name: 'Subject', value: '11111', inline: false }])] }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('style="grid-column:span 12"');
@@ -480,7 +480,7 @@ describe('embed fields', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect([...html.matchAll(/grid-column:span 4/g)]).toHaveLength(3);
@@ -500,7 +500,7 @@ describe('embed fields', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect([...html.matchAll(/grid-column:span 6/g)]).toHaveLength(2);
@@ -521,7 +521,7 @@ describe('embed fields', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // Each inline run is packed on its own, so neither pairs across the divider.
@@ -562,7 +562,7 @@ describe('message components', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // Buttons are message content: which actions staff were offered is part of
@@ -593,7 +593,7 @@ describe('message components', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('dbutton dbutton-primary disabled');
@@ -627,7 +627,7 @@ describe('message components', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // The interaction behind Claim no longer exists; the link still leads
@@ -645,7 +645,7 @@ describe('message components', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('class="dselect"');
@@ -662,7 +662,7 @@ describe('jumping to a replied-to message', () => {
           message({ id: '900000000000000003', reference: reply() }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('id="m900000000000000002"');
@@ -672,7 +672,7 @@ describe('jumping to a replied-to message', () => {
   it('offers no jump when the message is outside the transcript', () => {
     const html = renderTranscript(
       data({ messages: [message({ reference: reply({ resolved: false }) })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // There is no anchor to land on, so the row carries no link. Asserted on
@@ -683,7 +683,7 @@ describe('jumping to a replied-to message', () => {
 
   it('overlays the jump rather than wrapping the row', () => {
     const html = renderTranscript(data({ messages: [message({ reference: reply() })] }), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
     })[0]!.content.toString('utf8');
 
     // The quoted text can contain links, and an anchor cannot nest in another.
@@ -696,7 +696,7 @@ describe('timestamps', () => {
 
   const at = (iso: string): string =>
     renderTranscript(data({ generatedAt, messages: [message({ createdAt: new Date(iso) })] }), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
     })[0]!.content.toString('utf8');
 
   it('shows the clock alone for the day the transcript was made', () => {
@@ -733,7 +733,7 @@ describe('system events', () => {
       data({
         messages: [message({ content: '', system: true, systemAction: 'pinned' })],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('pinned ');
@@ -759,7 +759,7 @@ describe('system events', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // Discord fills a pin event's reference with the message that was pinned,
@@ -774,7 +774,7 @@ describe('system events', () => {
       data({
         messages: [message({ content: '', system: true, systemAction: 'pinned', reference: null })],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('<span class="system-subject">a message</span>');
@@ -785,7 +785,7 @@ describe('system events', () => {
       data({
         messages: [message({ content: 'Something happened.', system: true, systemAction: null })],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('message start system');
@@ -823,7 +823,7 @@ describe('posted images and GIFs', () => {
   it('shows the picture itself rather than a thumbnail in a card', () => {
     const html = renderTranscript(
       data({ messages: [message({ content: GIF_URL, embeds: [mediaEmbed()] })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain(`<img class="media-embed" src="${GIF_URL}"`);
@@ -836,7 +836,7 @@ describe('posted images and GIFs', () => {
   it('hides the URL when the link is the whole message, as Discord does', () => {
     const html = renderTranscript(
       data({ messages: [message({ content: GIF_URL, embeds: [mediaEmbed()] })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).not.toContain('<a class="link"');
@@ -845,7 +845,7 @@ describe('posted images and GIFs', () => {
   it('keeps the URL visible when the message also says something', () => {
     const html = renderTranscript(
       data({ messages: [message({ content: `look at this ${GIF_URL}`, embeds: [mediaEmbed()] })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('look at this');
@@ -871,7 +871,7 @@ describe('posted images and GIFs', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // The origin URL is on a host the image policy rejects; only the proxy copy
@@ -895,7 +895,7 @@ describe('posted images and GIFs', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // Hiding the URL is only safe once the picture has replaced it. The image
@@ -918,7 +918,7 @@ describe('stickers', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain(
@@ -937,7 +937,7 @@ describe('stickers', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('stickers/11111111111111111.gif');
@@ -953,7 +953,7 @@ describe('stickers', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('sticker-fallback');
@@ -968,7 +968,7 @@ describe('oversized transcripts', () => {
   );
 
   it('splits into several complete standalone files instead of hosting anything', () => {
-    const parts = renderTranscript(data({ messages: many }), { maxBytes: 200 * 1024 });
+    const parts = renderTranscript(data({ messages: many }), { maxFileBytes: 200 * 1024 });
 
     expect(parts.length).toBeGreaterThan(1);
     for (const part of parts) {
@@ -988,7 +988,7 @@ describe('oversized transcripts', () => {
   });
 
   it('preserves every message across the split', () => {
-    const parts = renderTranscript(data({ messages: many }), { maxBytes: 200 * 1024 });
+    const parts = renderTranscript(data({ messages: many }), { maxFileBytes: 200 * 1024 });
     const total = parts.reduce((sum, part) => sum + part.messageCount, 0);
     expect(total).toBe(many.length);
   });
@@ -1000,7 +1000,7 @@ describe('oversized transcripts', () => {
     );
 
     const parts = renderTranscript(data({ messages: many }), {
-      maxBytes: 200 * 1024,
+      maxFileBytes: 200 * 1024,
       filename: 'my-log',
     });
     const names = new Set(parts.map((part) => part.filename));
@@ -1018,7 +1018,7 @@ describe('branding and chrome options', () => {
     '<circle cx="5" cy="5" r="5" fill="currentColor"/></svg>';
 
   const render = (options: RenderTranscriptOptions): string =>
-    renderTranscript(data(), { maxBytes: BIG_BUDGET, ...options })[0]!.content.toString('utf8');
+    renderTranscript(data(), { maxFileBytes: BIG_BUDGET, ...options })[0]!.content.toString('utf8');
 
   it('carries a provided logo in the header as well as the footer', () => {
     const html = render({ brand: { logoSvg: LOGO } });
@@ -1052,7 +1052,7 @@ describe('branding and chrome options', () => {
 
 describe('metadata panel and notices', () => {
   const render = (options: RenderTranscriptOptions): string =>
-    renderTranscript(data(), { maxBytes: BIG_BUDGET, ...options })[0]!.content.toString('utf8');
+    renderTranscript(data(), { maxFileBytes: BIG_BUDGET, ...options })[0]!.content.toString('utf8');
 
   it('renders no panel unless entries are provided', () => {
     expect(render({})).not.toContain('class="panel"');
@@ -1102,7 +1102,7 @@ describe('metadata panel and notices', () => {
 describe('Components V2 messages', () => {
   const renderOne = (overrides: Partial<TranscriptMessage>): string =>
     renderTranscript(data({ messages: [message({ content: '', ...overrides })] }), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
     })[0]!.content.toString('utf8');
 
   it('renders the words the layout tree carries instead of a blank row', () => {
@@ -1284,7 +1284,7 @@ describe('day boundaries and split parts', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     // Four minutes apart, same author - but a date divider always forces a
@@ -1302,7 +1302,7 @@ describe('day boundaries and split parts', () => {
       }),
     );
 
-    const parts = renderTranscript(data({ messages: many }), { maxBytes: 120 * 1024 });
+    const parts = renderTranscript(data({ messages: many }), { maxFileBytes: 120 * 1024 });
     expect(parts.length).toBeGreaterThan(1);
 
     for (const part of parts) {
@@ -1330,7 +1330,7 @@ describe('day boundaries and split parts', () => {
     });
 
     const parts = renderTranscript(data({ messages: [first, second] }), {
-      maxBytes: 100 * 1024,
+      maxFileBytes: 100 * 1024,
     });
     expect(parts).toHaveLength(2);
 
@@ -1346,7 +1346,7 @@ describe('day boundaries and split parts', () => {
 describe('command invocations, threads and boosts', () => {
   const renderOne = (overrides: Partial<TranscriptMessage>): string =>
     renderTranscript(data({ messages: [message(overrides)] }), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
     })[0]!.content.toString('utf8');
 
   it('shows who used which command above the reply', () => {
@@ -1453,7 +1453,7 @@ describe('embed anatomy', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
   it('renders the author icon and link', () => {
@@ -1507,7 +1507,7 @@ describe('audio and video attachments', () => {
   it('plays a video inline and allows it through media-src', () => {
     const html = renderTranscript(
       data({ messages: [message({ attachments: [attachment('video/mp4', 'clip.mp4')] })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('<video class="attachment-video" controls');
@@ -1518,7 +1518,7 @@ describe('audio and video attachments', () => {
   it('plays a voice message inline', () => {
     const html = renderTranscript(
       data({ messages: [message({ attachments: [attachment('audio/ogg', 'voice-message.ogg')] })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('<audio class="attachment-audio" controls');
@@ -1535,7 +1535,7 @@ describe('audio and video attachments', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).not.toContain('<video');
@@ -1549,7 +1549,7 @@ describe('audio and video attachments', () => {
 describe('favicon', () => {
   it('links a Discord-CDN favicon', () => {
     const html = renderTranscript(data(), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
       favicon: 'https://cdn.discordapp.com/icons/1/guild.png',
     })[0]!.content.toString('utf8');
 
@@ -1560,7 +1560,7 @@ describe('favicon', () => {
 
   it('drops a favicon off the allowlist', () => {
     const html = renderTranscript(data(), {
-      maxBytes: BIG_BUDGET,
+      maxFileBytes: BIG_BUDGET,
       favicon: 'https://evil.example.com/icon.png',
     })[0]!.content.toString('utf8');
 
@@ -1571,7 +1571,7 @@ describe('favicon', () => {
 
 describe('footer', () => {
   it('states how many messages were exported', () => {
-    const html = renderTranscript(data(), { maxBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
     expect(html).toContain('Exported 1 message ·');
   });
 });
@@ -1592,7 +1592,7 @@ describe('forwarded messages', () => {
   it('renders the forwarded material with its label and origin', () => {
     const html = renderTranscript(
       data({ messages: [message({ content: '', forwarded: forward })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('class="forward"');
@@ -1617,7 +1617,7 @@ describe('forwarded messages', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain(
@@ -1637,7 +1637,7 @@ describe('forwarded messages', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('<a class="forward-origin" href="#m900000000000000077"');
@@ -1654,7 +1654,7 @@ describe('forwarded messages', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).not.toContain('javascript:');
@@ -1675,7 +1675,7 @@ describe('forwarded messages', () => {
           }),
         ],
       }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).not.toContain('<script>alert');
@@ -1687,7 +1687,7 @@ describe('spoilers', () => {
   it('reveals on click, with hover only as the no-script fallback', () => {
     const html = renderTranscript(
       data({ messages: [message({ content: 'the answer is ||secret||' })] }),
-      { maxBytes: BIG_BUDGET },
+      { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('<span class="spoiler">secret</span>');

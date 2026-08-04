@@ -216,7 +216,7 @@ const parts = renderTranscript(
     truncated: collected.truncated,
     generatedAt: new Date(),
   },
-  { maxBytes: 8 * 1024 * 1024 },
+  { maxFileBytes: 8 * 1024 * 1024 },
 );
 ```
 
