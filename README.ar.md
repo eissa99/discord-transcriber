@@ -8,6 +8,18 @@
 
 </div>
 
+> [!NOTE]
+> <div dir="rtl">
+>
+> ‏`discord-transcriber` منشور أيضًا باسم
+> [`discord-html-transcript`](https://www.npmjs.com/package/discord-html-transcript).
+> نفس الحزمة، نفس المؤلف ([`ieissa` على npm](https://www.npmjs.com/~ieissa)
+> و[`eissa99` على GitHub](https://github.com/eissa99))، نفس الكود،
+> ونفس الإصدارات — تتزامنان تلقائيًا مع كل تحديث. ثبّت أي اسم يعجبك؛ كلا
+> الاسمين رسمي، ولا أحدهما نسخة منفصلة عن الأخرى.
+>
+> </div>
+
 ```js
 import { createTranscript } from 'discord-transcriber';
 

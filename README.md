@@ -5,6 +5,14 @@ like Discord — with one function call.
 
 **[اقرأ هذا الملف بالعربية →](https://github.com/eissa99/discord-transcriber/blob/main/README.ar.md)**
 
+> [!NOTE]
+> `discord-transcriber` is also published as
+> [`discord-html-transcript`](https://www.npmjs.com/package/discord-html-transcript).
+> Same package, same author ([`ieissa` on npm](https://www.npmjs.com/~ieissa),
+> [`eissa99` on GitHub](https://github.com/eissa99)), same code, same versions —
+> kept in lockstep by an automated sync. Install whichever name you prefer;
+> neither is a fork of the other.
+
 ```js
 import { createTranscript } from 'discord-transcriber';
 

@@ -52,25 +52,32 @@ const FILES = [
   'package-lock.json',
 ];
 
-/**
- * Never mirrored: this script is source-side only, and it must not run in
- * reverse. CLAUDE.md is likewise absent from DIRS/FILES on purpose — each side
- * carries its own, one describing the source and one warning off edits to the
- * mirror.
- */
+/** Never mirrored: this script is source-side only, and must not run in reverse. */
 const EXCLUDE = new Set(['scripts']);
 
 const added = [];
 const changed = [];
 const removed = [];
 
+/**
+ * Swaps the two names rather than replacing one with the other, so a file may
+ * name both and still read correctly on each side. The README's "two names,
+ * one package" notice depends on this: whichever package you are reading,
+ * it names itself first and its twin second.
+ */
 function rewrite(buffer) {
-  // A NUL byte means binary — pass it through untouched.
+  // A NUL byte means binary — pass it through untouched, and frees NUL as a
+  // sentinel for the swap below.
   if (buffer.includes(0)) return buffer;
-  return Buffer.from(
-    buffer.toString('utf8').split(SOURCE_NAME).join(MIRROR_NAME),
-    'utf8',
-  );
+  const swapped = buffer
+    .toString('utf8')
+    .split(SOURCE_NAME)
+    .join('\u0000')
+    .split(MIRROR_NAME)
+    .join(SOURCE_NAME)
+    .split('\u0000')
+    .join(MIRROR_NAME);
+  return Buffer.from(swapped, 'utf8');
 }
 
 function put(relPath, contents) {
