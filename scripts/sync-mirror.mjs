@@ -106,11 +106,13 @@ function walk(dir, base = dir) {
 
 /**
  * package.json needs one structural edit beyond the name rewrite: the mirror
- * has no scripts/ directory, so it must not advertise a `sync` script.
+ * has no scripts/ directory, so no `sync`-family script may survive there.
  */
 function syncPackageJson() {
   const pkg = JSON.parse(rewrite(readFileSync(join(root, 'package.json'))).toString('utf8'));
-  delete pkg.scripts.sync;
+  for (const key of Object.keys(pkg.scripts)) {
+    if (key === 'sync' || key.startsWith('sync:')) delete pkg.scripts[key];
+  }
 
   const before = existsSync(join(mirror, 'package.json'))
     ? JSON.parse(readFileSync(join(mirror, 'package.json'), 'utf8'))
@@ -129,24 +131,29 @@ if (!existsSync(mirror)) {
 }
 
 for (const dir of DIRS) {
-  if (EXCLUDE.has(dir) || !existsSync(join(root, dir))) continue;
+  if (EXCLUDE.has(dir)) continue;
 
-  const sourceFiles = walk(join(root, dir));
-  for (const rel of sourceFiles) {
-    put(`${dir}/${rel}`, rewrite(readFileSync(join(root, dir, rel))));
-  }
+  // A directory gone from the source empties out of the mirror too.
+  const sourceFiles = existsSync(join(root, dir)) ? walk(join(root, dir)) : [];
 
-  // Anything the source no longer has, the mirror should not keep.
+  // Deletions run before copies: on this case-insensitive filesystem a
+  // case-only rename must remove the old-cased mirror file first, or the
+  // fresh copy would land in the old-cased file and then be deleted.
   if (existsSync(join(mirror, dir))) {
     const keep = new Set(sourceFiles);
     for (const rel of walk(join(mirror, dir))) {
       if (!keep.has(rel)) drop(`${dir}/${rel}`);
     }
   }
+
+  for (const rel of sourceFiles) {
+    put(`${dir}/${rel}`, rewrite(readFileSync(join(root, dir, rel))));
+  }
 }
 
 for (const file of FILES) {
   if (existsSync(join(root, file))) put(file, rewrite(readFileSync(join(root, file))));
+  else if (existsSync(join(mirror, file))) drop(file);
 }
 
 const { version, depsChanged } = syncPackageJson();
