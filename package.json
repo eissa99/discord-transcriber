@@ -58,6 +58,9 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "demo": "node examples/generate-demo.mjs",
+    "sync": "node scripts/sync-mirror.mjs",
+    "sync:check": "node scripts/sync-mirror.mjs --check",
+    "sync:verify": "node scripts/sync-mirror.mjs --verify",
     "prepublishOnly": "npm run typecheck && npm run test && npm run build"
   },
   "peerDependencies": {
