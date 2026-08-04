@@ -252,6 +252,8 @@ npm run demo    # writes examples/demo.html — open it in your browser
 
 [MIT](https://github.com/eissa99/discord-transcriber/blob/main/LICENSE)
 
-## 🤝 Enjoy the package?
+## ⭐ Found it useful?
 
-Give it a star ⭐ on [GitHub](https://github.com/eissa99/discord-transcriber) and/or support me on [ko-fi](https://ko-fi.com/ieissa)
+A star on [GitHub](https://github.com/eissa99/discord-transcriber) helps a lot — and if you'd like to support my work, I'm on [ko-fi](https://ko-fi.com/ieissa).
+
+Made with ❤️ by [Eissa](https://github.com/eissa99)

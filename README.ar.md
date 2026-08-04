@@ -257,8 +257,10 @@ npm run demo    # يكتب examples/demo.html — افتحه في متصفحك
 
 <div dir="rtl">
 
-## 🤝 عجبتك الحزمة؟
+## ⭐ استفدت منها؟
 
-أعطها نجمة ⭐ في [GitHub](https://github.com/eissa99/discord-transcriber) وادعمني على [ko-fi](https://ko-fi.com/ieissa)
+نجمة في [GitHub](https://github.com/eissa99/discord-transcriber) تفرق كثير — وإن حبيت تدعم شغلي فأنا على [ko-fi](https://ko-fi.com/ieissa).
+
+صُنعت بـ ❤️ بواسطة [Eissa](https://github.com/eissa99)
 
 </div>
