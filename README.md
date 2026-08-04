@@ -237,6 +237,19 @@ announcements), so `<@id>` renders as a name, not a number.
 - The file contains exactly one script, which only makes reply-jumps scroll
   smoothly. With JavaScript disabled, everything still works.
 
+## Responsible use
+
+A transcript contains your members' messages. Once your bot stores or shares
+one, that data is your responsibility under Discord's
+[Developer Terms of Service](https://discord.com/developers/docs/policies-and-agreements/developer-terms-of-service)
+and [Developer Policy](https://discord.com/developers/docs/policies-and-agreements/developer-policy):
+
+- Mention transcripts in your bot's privacy policy, so members know their
+  messages may be archived.
+- Share a transcript only with people who could already read the channel —
+  a ticket transcript belongs to the staff and the ticket's participants.
+- Delete stored transcripts when a member or server asks you to.
+
 ## Demo
 
 To see a full sample transcript, clone
