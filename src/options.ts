@@ -11,15 +11,7 @@ import type { Message } from 'discord.js';
 
 /** Glyphs available for the entries of the details panel. */
 export type MetadataIcon =
-  | 'tag'
-  | 'text'
-  | 'person'
-  | 'shield'
-  | 'people'
-  | 'clock'
-  | 'lock'
-  | 'note'
-  | 'chat';
+  'tag' | 'text' | 'person' | 'shield' | 'people' | 'clock' | 'lock' | 'note' | 'chat';
 
 /**
  * The document chrome around the conversation: the header, the accent colour

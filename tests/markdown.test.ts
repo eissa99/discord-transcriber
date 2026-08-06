@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  EMPTY_MENTIONS,
-  renderMarkdown,
-  type MentionIndex,
-} from '../src/markdown.js';
+import { EMPTY_MENTIONS, renderMarkdown, type MentionIndex } from '../src/markdown.js';
 
 const MENTIONS: MentionIndex = {
   users: { '300000000000000001': '7sO', '300000000000000002': 'Eissa' },
@@ -11,7 +7,10 @@ const MENTIONS: MentionIndex = {
     '200000000000000001': { name: 'Support Team', color: '#9146ff' },
     '200000000000000002': { name: 'Muted', color: null },
   },
-  channels: { '400000000000000001': 'general', '400000000000000002': 'ticket-1042' },
+  channels: {
+    '400000000000000001': 'general',
+    '400000000000000002': 'ticket-1042',
+  },
 };
 
 const render = (content: string, mentions: MentionIndex = MENTIONS): string =>
@@ -342,7 +341,12 @@ describe('security', () => {
   it('cannot inject an attribute through a resolved mention name', () => {
     const hostile: MentionIndex = {
       users: { '300000000000000001': '" onmouseover="alert(1)' },
-      roles: { '200000000000000001': { name: '<img src=x>', color: 'red;background:url(x)' } },
+      roles: {
+        '200000000000000001': {
+          name: '<img src=x>',
+          color: 'red;background:url(x)',
+        },
+      },
       channels: { '400000000000000001': '"><script>alert(1)</script>' },
     };
 

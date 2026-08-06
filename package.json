@@ -54,6 +54,9 @@
   },
   "scripts": {
     "build": "tsup",
+    "check": "npm run format:check && npm run typecheck && npm test && npm run build",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
@@ -61,7 +64,11 @@
     "sync": "node scripts/sync-mirror.mjs",
     "sync:check": "node scripts/sync-mirror.mjs --check",
     "sync:verify": "node scripts/sync-mirror.mjs --verify",
-    "prepublishOnly": "npm run typecheck && npm run test && npm run build"
+    "prepublishOnly": "npm run check",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,mjs,json,md,ts,yml,yaml}": "prettier --write"
   },
   "peerDependencies": {
     "discord.js": "^14.19.0"
@@ -69,6 +76,9 @@
   "devDependencies": {
     "@types/node": "22.20.1",
     "discord.js": "14.27.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "prettier": "3.9.6",
     "tsup": "8.5.0",
     "typescript": "5.9.3",
     "vitest": "4.1.10"

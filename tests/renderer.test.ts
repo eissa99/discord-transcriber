@@ -94,13 +94,17 @@ describe('transcript rendering', () => {
   });
 
   it('titles the document after the channel and guild', () => {
-    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString(
+      'utf8',
+    );
     expect(html).toContain('<title>#support-1042 · Awesome Guild</title>');
   });
 
   it('takes a custom title', () => {
-    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET, title: 'Ticket 1042' })[0]!
-      .content.toString('utf8');
+    const html = renderTranscript(data(), {
+      maxFileBytes: BIG_BUDGET,
+      title: 'Ticket 1042',
+    })[0]!.content.toString('utf8');
     expect(html).toContain('<title>Ticket 1042</title>');
   });
 
@@ -111,7 +115,9 @@ describe('transcript rendering', () => {
   });
 
   it('is self-contained: nothing is fetched, and styling is inline', () => {
-    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString(
+      'utf8',
+    );
 
     expect(html).not.toContain('javascript:');
     expect(html).toContain('<style>');
@@ -129,7 +135,9 @@ describe('transcript rendering', () => {
   });
 
   it('writes every full timestamp with its zone', () => {
-    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString(
+      'utf8',
+    );
 
     // Self-describing rather than explained by a note elsewhere, so a line
     // copied out of the document stays unambiguous. The generation instant in
@@ -139,14 +147,18 @@ describe('transcript rendering', () => {
   });
 
   it('carries no logo and no brand line unless one is provided', () => {
-    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString(
+      'utf8',
+    );
 
     expect(html).not.toContain('class="brand-mark"');
     expect(html).not.toContain('<div class="brand">');
   });
 
   it('declares a content security policy that admits only its own script', () => {
-    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString(
+      'utf8',
+    );
 
     expect(html).toContain('Content-Security-Policy');
     expect(html).toContain('default-src &#39;none&#39;');
@@ -162,7 +174,9 @@ describe('transcript rendering', () => {
   });
 
   it('ships the exact bytes its policy hashes', () => {
-    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString(
+      'utf8',
+    );
 
     // The hash is derived from the script constant, so a drift between the two
     // is impossible by construction - this guards the wiring, not the maths.
@@ -345,7 +359,9 @@ describe('transcript rendering', () => {
   });
 
   it('defaults the accent to Discord blurple', () => {
-    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString(
+      'utf8',
+    );
 
     // Scoped to the stylesheet variable: a message author's role colour is
     // unrelated data that also lands in the document.
@@ -995,9 +1011,7 @@ describe('oversized transcripts', () => {
 
   it('names split files distinctly', () => {
     expect(transcriptFileName('transcript-general', 1, 1)).toBe('transcript-general.html');
-    expect(transcriptFileName('transcript-general', 2, 3)).toBe(
-      'transcript-general-part2of3.html',
-    );
+    expect(transcriptFileName('transcript-general', 2, 3)).toBe('transcript-general-part2of3.html');
 
     const parts = renderTranscript(data({ messages: many }), {
       maxFileBytes: 200 * 1024,
@@ -1517,7 +1531,9 @@ describe('audio and video attachments', () => {
 
   it('plays a voice message inline', () => {
     const html = renderTranscript(
-      data({ messages: [message({ attachments: [attachment('audio/ogg', 'voice-message.ogg')] })] }),
+      data({
+        messages: [message({ attachments: [attachment('audio/ogg', 'voice-message.ogg')] })],
+      }),
       { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -1553,9 +1569,7 @@ describe('favicon', () => {
       favicon: 'https://cdn.discordapp.com/icons/1/guild.png',
     })[0]!.content.toString('utf8');
 
-    expect(html).toContain(
-      '<link rel="icon" href="https://cdn.discordapp.com/icons/1/guild.png">',
-    );
+    expect(html).toContain('<link rel="icon" href="https://cdn.discordapp.com/icons/1/guild.png">');
   });
 
   it('drops a favicon off the allowlist', () => {
@@ -1571,7 +1585,9 @@ describe('favicon', () => {
 
 describe('footer', () => {
   it('states how many messages were exported', () => {
-    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString('utf8');
+    const html = renderTranscript(data(), { maxFileBytes: BIG_BUDGET })[0]!.content.toString(
+      'utf8',
+    );
     expect(html).toContain('Exported 1 message ·');
   });
 });
