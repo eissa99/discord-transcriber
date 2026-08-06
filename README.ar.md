@@ -8,6 +8,18 @@
 
 </div>
 
+> [!NOTE]
+> <div dir="rtl">
+>
+> ‏`discord-transcriber` منشور أيضًا باسم
+> [`discord-html-transcript`](https://www.npmjs.com/package/discord-html-transcript).
+> نفس الحزمة، نفس المؤلف ([`ieissa` على npm](https://www.npmjs.com/~ieissa)
+> و[`eissa99` على GitHub](https://github.com/eissa99))، نفس الكود،
+> ونفس الإصدارات — تتزامنان تلقائيًا مع كل تحديث. ثبّت أي اسم يعجبك؛ كلا
+> الاسمين رسمي، ولا أحدهما نسخة منفصلة عن الأخرى.
+>
+> </div>
+
 ```js
 import { createTranscript } from 'discord-transcriber';
 
@@ -67,7 +79,7 @@ npm install discord-transcriber
 
 <div dir="rtl">
 
-تتطلب Node.js 20+ و discord.js v14.19+ (اعتماد نظير).
+تتطلب Node.js 20+ و discord.js v14.19+ (اعتماد نظير) — أول إصدار يحمل Components V2 التي تعرضها النسخ. نسختك أقدم؟ يكفي أمر `npm install discord.js@latest`.
 
 > **⚠️ صلاحية Message Content مطلوبة.** بدون صلاحية **Message Content** المميزة يحجب ديسكورد `content` و`embeds` و`attachments` و`components` من سجل الرسائل، فتصل كل رسالة لم يكتبها بوتك فارغة — وتظهر النسخة فقاعات خاوية بلا أي خطأ. فعّلها من صفحة **Bot** في [بوابة المطورين](https://discord.com/developers/applications) **وأعلنها** في العميل:
 >
@@ -100,7 +112,7 @@ transcript.byteSize; // الحجم الكلي لكل الأجزاء
 
 <div dir="rtl">
 
-تعمل مع أي قناة نصية داخل سيرفر: القنوات النصية وقنوات الإعلانات والثريدات ودردشة القنوات الصوتية.
+تعمل مع أي قناة نصية داخل سيرفر: القنوات النصية وقنوات الإعلانات والثريدات ودردشة القنوات الصوتية وقنوات الستيج.
 
 أرسل ملفًا واحدًا في كل رسالة — حد الرفع في ديسكورد يسري على الطلب كاملًا:
 
@@ -159,9 +171,11 @@ await createTranscript(channel, {
   metadata: [
     { label: 'القسم', value: 'الدعم الفني', icon: 'tag' },
     { label: 'فتحها', value: '7sO (7so)', icon: 'person' },
+    { label: 'أغلقها', value: 'Eissa (eissa)', icon: 'shield' },
     { label: 'سبب الإغلاق', value: 'تم الحل.', icon: 'note', wide: true },
   ],
   metadataTitle: 'التفاصيل', // عنوان اللوحة — اكتبه بأي لغة
+  notices: ['صُدِّرت لمراجعة الإشراف.'],
 });
 ```
 
@@ -209,7 +223,7 @@ const parts = renderTranscript(
     truncated: collected.truncated,
     generatedAt: new Date(),
   },
-  { maxBytes: 8 * 1024 * 1024 },
+  { maxFileBytes: 8 * 1024 * 1024 },
 );
 ```
 
@@ -224,6 +238,14 @@ const parts = renderTranscript(
 - **الوسائط تُحمَّل من خوادم ديسكورد.** روابط المرفقات تنتهي صلاحيتها بعد فترة، فقد تتوقف الصور والمشغلات في النسخ القديمة عن العمل. نص المحادثة غير متأثر — فهو داخل الملف.
 - **قنوات الخاص (DM) غير مدعومة** — الجامع يقرأ سياق السيرفر (الألقاب، ألوان الرتب، مستوى البوست).
 - الملف يحوي سكربتًا واحدًا فقط وظيفته جعل القفز إلى الردود سلسًا. مع تعطيل الجافاسكربت كل شيء يستمر بالعمل.
+
+## استخدام مسؤول
+
+النسخة تحتوي رسائل أعضاء سيرفرك. متى ما خزّنها بوتك أو شاركها صارت تلك البيانات مسؤوليتك وفق [شروط خدمة المطورين](https://discord.com/developers/docs/policies-and-agreements/developer-terms-of-service) و[سياسة مطوري ديسكورد](https://discord.com/developers/docs/policies-and-agreements/developer-policy):
+
+- اذكر النسخ في سياسة خصوصية بوتك، حتى يعرف الأعضاء أن رسائلهم قد تُؤرشف.
+- لا تشارك النسخة إلا مع من كان يستطيع قراءة القناة أصلًا — نسخة التذكرة تخص الطاقم وأطراف التذكرة.
+- احذف النسخ المخزّنة متى ما طلب منك عضو أو سيرفر ذلك.
 
 ## تجربة سريعة
 
@@ -247,8 +269,14 @@ npm run demo    # يكتب examples/demo.html — افتحه في متصفحك
 
 <div dir="rtl">
 
-## 🤝 عجبتك الحزمة؟
+## ⭐ استفدت منها؟
 
-أعطها نجمة ⭐ في [GitHub](https://github.com/eissa99/discord-transcriber) وادعمني على [ko-fi](https://ko-fi.com/ieissa)
+نجمة في [GitHub](https://github.com/eissa99/discord-transcriber) تفرق كثير — وإن حبيت تدعم شغلي فأنا على [ko-fi](https://ko-fi.com/ieissa).
+
+صُنعت بـ ❤️ بواسطة [Eissa](https://github.com/eissa99)
+
+---
+
+_‏discord-transcriber مشروع مفتوح المصدر مستقل، لا تربطه أي صلة رسمية بشركة Discord._
 
 </div>

@@ -5,6 +5,14 @@ like Discord — with one function call.
 
 **[اقرأ هذا الملف بالعربية →](https://github.com/eissa99/discord-transcriber/blob/main/README.ar.md)**
 
+> [!NOTE]
+> `discord-transcriber` is also published as
+> [`discord-html-transcript`](https://www.npmjs.com/package/discord-html-transcript).
+> Same package, same author ([`ieissa` on npm](https://www.npmjs.com/~ieissa),
+> [`eissa99` on GitHub](https://github.com/eissa99)), same code, same versions —
+> kept in lockstep by an automated sync. Install whichever name you prefer;
+> neither is a fork of the other.
+
 ```js
 import { createTranscript } from 'discord-transcriber';
 
@@ -71,7 +79,9 @@ All in Discord's own colours, spacing and typography.
 npm install discord-transcriber
 ```
 
-Requires Node.js 20+ and discord.js v14.19+ (peer dependency).
+Requires Node.js 20+ and discord.js v14.19+ (peer dependency) — the first
+release with Components V2, which transcripts render. On an older discord.js,
+`npm install discord.js@latest` brings you up.
 
 > **⚠️ Message Content intent — required.** Without the privileged **Message
 > Content** intent, Discord hides `content`, `embeds`, `attachments` and
@@ -208,7 +218,7 @@ const parts = renderTranscript(
     truncated: collected.truncated,
     generatedAt: new Date(),
   },
-  { maxBytes: 8 * 1024 * 1024 },
+  { maxFileBytes: 8 * 1024 * 1024 },
 );
 ```
 
@@ -231,6 +241,19 @@ announcements), so `<@id>` renders as a name, not a number.
 - The file contains exactly one script, which only makes reply-jumps scroll
   smoothly. With JavaScript disabled, everything still works.
 
+## Responsible use
+
+A transcript contains your members' messages. Once your bot stores or shares
+one, that data is your responsibility under Discord's
+[Developer Terms of Service](https://discord.com/developers/docs/policies-and-agreements/developer-terms-of-service)
+and [Developer Policy](https://discord.com/developers/docs/policies-and-agreements/developer-policy):
+
+- Mention transcripts in your bot's privacy policy, so members know their
+  messages may be archived.
+- Share a transcript only with people who could already read the channel —
+  a ticket transcript belongs to the staff and the ticket's participants.
+- Delete stored transcripts when a member or server asks you to.
+
 ## Demo
 
 To see a full sample transcript, clone
@@ -246,6 +269,12 @@ npm run demo    # writes examples/demo.html — open it in your browser
 
 [MIT](https://github.com/eissa99/discord-transcriber/blob/main/LICENSE)
 
-## 🤝 Enjoy the package?
+## ⭐ Found it useful?
 
-Give it a star ⭐ on [GitHub](https://github.com/eissa99/discord-transcriber) and/or support me on [ko-fi](https://ko-fi.com/ieissa)
+A star on [GitHub](https://github.com/eissa99/discord-transcriber) helps a lot — and if you'd like to support my work, I'm on [ko-fi](https://ko-fi.com/ieissa).
+
+Made with ❤️ by [Eissa](https://github.com/eissa99)
+
+---
+
+_discord-transcriber is an independent open-source project, not affiliated with or endorsed by Discord Inc._

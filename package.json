@@ -1,6 +1,6 @@
 {
   "name": "discord-transcriber",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Pixel-accurate, self-contained HTML transcripts for Discord channels. XSS-safe by construction, CSP-locked, split into parts when a file would exceed the guild's upload limit.",
   "keywords": [
     "discord",
@@ -61,6 +61,9 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "demo": "node examples/generate-demo.mjs",
+    "sync": "node scripts/sync-mirror.mjs",
+    "sync:check": "node scripts/sync-mirror.mjs --check",
+    "sync:verify": "node scripts/sync-mirror.mjs --verify",
     "prepublishOnly": "npm run check",
     "prepare": "husky"
   },
@@ -74,7 +77,7 @@
     "@types/node": "22.20.1",
     "discord.js": "14.27.0",
     "husky": "^9.1.7",
-    "lint-staged": "17.3.0",
+    "lint-staged": "^15.5.2",
     "prettier": "3.9.6",
     "tsup": "8.5.0",
     "typescript": "5.9.3",

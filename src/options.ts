@@ -56,7 +56,7 @@ export interface RenderTranscriptOptions {
    * exceed it is split into several complete standalone HTML files. Default:
    * unlimited, one file.
    */
-  readonly maxBytes?: number;
+  readonly maxFileBytes?: number;
   /** Base file name without extension. Default: `transcript`. */
   readonly filename?: string;
   /** Document `<title>`. Default: `#channel · guild`. */

@@ -81,7 +81,7 @@ export async function createTranscript(
     mentions: collected.mentions,
   };
 
-  const maxBytes =
+  const maxFileBytes =
     typeof options.maxFileBytes === 'number'
       ? options.maxFileBytes
       : uploadBudgetBytes(channel.guild);
@@ -90,7 +90,7 @@ export async function createTranscript(
 
   const parts = renderTranscript(data, {
     ...options,
-    maxBytes,
+    maxFileBytes,
     filename,
     ...(favicon === null ? {} : { favicon }),
   });
