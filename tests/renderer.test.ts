@@ -72,6 +72,7 @@ function reply(
     authorAvatarUrl: 'https://cdn.discordapp.com/avatars/2/b.png',
     authorBot: false,
     hasMedia: false,
+    mediaHint: null,
     ...overrides,
   };
 }
@@ -252,6 +253,7 @@ describe('transcript rendering', () => {
               authorAvatarUrl: null,
               authorBot: false,
               hasMedia: false,
+              mediaHint: null,
             },
           }),
         ],
@@ -327,6 +329,7 @@ describe('transcript rendering', () => {
               authorAvatarUrl: null,
               authorBot: false,
               hasMedia: false,
+              mediaHint: null,
             },
           }),
         ],
@@ -397,11 +400,44 @@ describe('transcript rendering', () => {
 
   it('names the attachment when the message replied to had no text', () => {
     const html = renderTranscript(
-      data({ messages: [message({ reference: reply({ excerpt: '', hasMedia: true }) })] }),
+      data({
+        messages: [
+          message({ reference: reply({ excerpt: '', hasMedia: true, mediaHint: 'attachment' }) }),
+        ],
+      }),
       { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('Click to see attachment');
+  });
+
+  it('names a sticker with Discord\'s own wording and glyph', () => {
+    const html = renderTranscript(
+      data({
+        messages: [
+          message({ reference: reply({ excerpt: '', hasMedia: true, mediaHint: 'sticker' }) }),
+        ],
+      }),
+      { maxFileBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).toContain('Click to see sticker');
+    expect(html).not.toContain('Click to see attachment');
+    expect(html).toContain('class="reply-media-icon"');
+  });
+
+  it('shows "Click to see message" with no icon for a reply to a Components V2 message', () => {
+    const html = renderTranscript(
+      data({
+        messages: [message({ reference: reply({ excerpt: '', hasMedia: false, mediaHint: 'message' }) })],
+      }),
+      { maxFileBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).toContain('Click to see message');
+    expect(html).not.toContain('Click to see attachment');
+    // A Components V2 reply carries the placeholder but no trailing glyph.
+    expect(html).not.toContain('class="reply-media-icon"');
   });
 
   it('leaves the quoted line empty when there was nothing to quote', () => {
@@ -427,7 +463,7 @@ describe('transcript rendering', () => {
 
   it('flags that the message replied to carried media', () => {
     const html = renderTranscript(
-      data({ messages: [message({ reference: reply({ hasMedia: true }) })] }),
+      data({ messages: [message({ reference: reply({ hasMedia: true, mediaHint: 'attachment' }) })] }),
       { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -437,12 +473,14 @@ describe('transcript rendering', () => {
   it('does not flag media on a reply pointing outside the transcript', () => {
     const html = renderTranscript(
       data({
-        messages: [message({ reference: reply({ resolved: false, hasMedia: true }) })],
+        messages: [
+          message({ reference: reply({ resolved: false, hasMedia: true, mediaHint: 'attachment' }) }),
+        ],
       }),
       { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
-    // `hasMedia` is unknowable for a message that was never collected.
+    // The media hint is unknowable for a message that was never collected.
     expect(html).not.toContain('class="reply-media-icon"');
   });
 });

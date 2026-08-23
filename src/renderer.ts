@@ -936,20 +936,44 @@ function renderReply(
     (reference.authorBot ? APP_BADGE : '') +
     `<span class="name"${nameStyle}>${escapeHtml(who)}</span>` +
     `<span class="excerpt">${renderReplyExcerpt(reference, mentions)}</span>` +
-    (reference.resolved && reference.hasMedia ? REPLY_MEDIA_ICON : '') +
+    (reference.resolved ? replyHintIcon(reference.mediaHint) : '') +
     '</div>'
   );
 }
 
 /**
- * The icon Discord puts after the quoted line when the message replied to
- * carried media. Inline markup rather than a fetched image, so it survives the
- * document's image policy and the file staying self-contained.
+ * The icons Discord puts after the quoted line of a reply whose quoted message
+ * is only media, one per kind, matching the client's own glyphs. Inline markup
+ * rather than fetched images, so they survive the document's image policy and
+ * the file staying self-contained. A Components V2 reply ('message') carries no
+ * trailing icon, as in the client.
  */
-const REPLY_MEDIA_ICON =
+const REPLY_ATTACHMENT_ICON =
   '<svg class="reply-media-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">' +
   '<path fill="currentColor" fill-rule="evenodd" d="M2 5a3 3 0 0 1 3-3h14a3 3 0 0 1 3 3v14a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5Zm13.35 8.13 3.5 4.67c.37.5.02 1.2-.6 1.2H5.81a.75.75 0 0 1-.59-1.22l1.86-2.32a1.5 1.5 0 0 1 2.34 0l.5.64 2.23-2.97a2 2 0 0 1 3.2 0ZM10.2 5.98c.23-.91-.88-1.55-1.55-.9a.93.93 0 0 1-1.3 0c-.67-.65-1.78-.01-1.55.9a.93.93 0 0 1-.65 1.12c-.9.26-.9 1.54 0 1.8.48.14.77.63.65 1.12-.23.91.88 1.55 1.55.9a.93.93 0 0 1 1.3 0c.67.65 1.78.01 1.55-.9a.93.93 0 0 1 .65-1.12c.9-.26.9-1.54 0-1.8a.93.93 0 0 1-.65-1.12Z" clip-rule="evenodd"/>' +
   '</svg>';
+
+const REPLY_STICKER_ICON =
+  '<svg class="reply-media-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">' +
+  '<path fill="currentColor" fill-rule="evenodd" d="M7 3h10a4 4 0 0 1 4 4v6.5a.5.5 0 0 1-.5.5H19a5 5 0 0 0-5 5v1.5a.5.5 0 0 1-.5.5H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm-.5 7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM19 8.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm-9.91 2.94a1 1 0 0 0-1.66 1.12 5.5 5.5 0 0 0 9.14 0 1 1 0 0 0-1.66-1.12 3.5 3.5 0 0 1-5.82 0Z" clip-rule="evenodd"/>' +
+  '<path fill="currentColor" d="M19 16h1.73a3 3 0 0 1-.6.88l-3.25 3.24a3 3 0 0 1-.88.61V19a3 3 0 0 1 3-3Z"/>' +
+  '</svg>';
+
+type ReplyMediaHint = 'sticker' | 'attachment' | 'message' | null;
+
+/** The exact wording Discord shows when a reply has no line to quote. */
+function replyHintText(hint: 'sticker' | 'attachment' | 'message'): string {
+  if (hint === 'sticker') return 'Click to see sticker';
+  if (hint === 'message') return 'Click to see message';
+  return 'Click to see attachment';
+}
+
+/** The trailing glyph for that placeholder — none for a Components V2 message. */
+function replyHintIcon(hint: ReplyMediaHint): string {
+  if (hint === 'sticker') return REPLY_STICKER_ICON;
+  if (hint === 'attachment') return REPLY_ATTACHMENT_ICON;
+  return '';
+}
 
 /**
  * Makes the reply row jump to the message it answers, as pressing one does in
@@ -1005,7 +1029,9 @@ function renderReplyExcerpt(
   const excerpt = reference.excerpt ?? '';
   if (excerpt.trim() !== '') return renderMarkdown(excerpt, mentions);
 
-  return reference.hasMedia ? '<span class="attachment-hint">Click to see attachment</span>' : '';
+  const hint = reference.mediaHint;
+  if (hint === null) return '';
+  return `<span class="attachment-hint">${replyHintText(hint)}</span>`;
 }
 
 function renderAttachment(attachment: {

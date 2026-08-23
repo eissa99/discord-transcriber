@@ -161,9 +161,14 @@ async function processMessages(
 
   const summaries = new Map<string, ReferenceSummary>();
   for (const message of kept) {
+    // A Components V2 message has no line Discord can preview, so it quotes
+    // nothing and shows "Click to see message" instead of the message text.
+    const componentsV2 = message.flags?.has(MessageFlags.IsComponentsV2) ?? false;
     summaries.set(message.id, {
       authorName: displayName(message),
-      excerpt: truncate(messageText(message).replace(/\s+/g, ' ').trim(), REFERENCE_EXCERPT_LENGTH),
+      excerpt: componentsV2
+        ? ''
+        : truncate(messageText(message).replace(/\s+/g, ' ').trim(), REFERENCE_EXCERPT_LENGTH),
       color: readRoleColor(message),
       avatarUrl: message.author.displayAvatarURL({ size: 32, extension: 'png' }),
       bot: message.author.bot,
@@ -172,6 +177,7 @@ async function processMessages(
         message.embeds.length > 0 ||
         message.stickers.size > 0 ||
         hasComponentMedia(rawComponents(message)),
+      mediaHint: referenceMediaHint(message, componentsV2),
     });
   }
 
@@ -368,6 +374,7 @@ interface ReferenceSummary {
   readonly avatarUrl: string | null;
   readonly bot: boolean;
   readonly hasMedia: boolean;
+  readonly mediaHint: 'sticker' | 'attachment' | 'message' | null;
 }
 
 function displayName(message: Message<true>): string {
@@ -930,6 +937,28 @@ function messageText(message: Message<true>): string {
   return firstSnapshot(message)?.content ?? '';
 }
 
+/**
+ * Which "Click to see …" placeholder Discord shows when a reply has no line to
+ * quote. Priority matches the client: a Components V2 message is always
+ * "message"; otherwise a sticker names itself; otherwise any attachment, embed
+ * or media component reads as an attachment.
+ */
+function referenceMediaHint(
+  message: Message<true>,
+  componentsV2: boolean,
+): 'sticker' | 'attachment' | 'message' | null {
+  if (componentsV2) return 'message';
+  if (message.stickers.size > 0) return 'sticker';
+  if (
+    message.attachments.size > 0 ||
+    message.embeds.length > 0 ||
+    hasComponentMedia(rawComponents(message))
+  ) {
+    return 'attachment';
+  }
+  return null;
+}
+
 const MEDIA_COMPONENTS: ReadonlySet<number> = new Set([
   ComponentType.MediaGallery,
   ComponentType.File,
@@ -1110,5 +1139,6 @@ function toReference(
     authorAvatarUrl: summary?.avatarUrl ?? null,
     authorBot: summary?.bot ?? false,
     hasMedia: summary?.hasMedia ?? false,
+    mediaHint: summary?.mediaHint ?? null,
   };
 }

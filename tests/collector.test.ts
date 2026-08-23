@@ -291,7 +291,7 @@ describe('Components V2 collection', () => {
     expect(collected.mentions.users[SILENT_ID]).toBe('Nora');
   });
 
-  it('quotes the TextDisplay text when a reply points at a V2 message', async () => {
+  it('does not quote a Components V2 message, matching the client\'s "Click to see message"', async () => {
     const announced = fakeMessage({
       id: '900000000000000001',
       componentsV2: true,
@@ -305,7 +305,11 @@ describe('Components V2 collection', () => {
     const { channel } = fakeChannel({ messages: [announced, reply] });
     const collected = await collectMessages(channel, { limit: 100 });
 
-    expect(collected.messages[1]!.reference?.excerpt).toBe('Ticket closed by staff.');
+    // The client shows "Click to see message", never the message's inner text,
+    // so the quoted line is empty and the hint carries the wording instead.
+    const reference = collected.messages[1]!.reference;
+    expect(reference?.excerpt).toBe('');
+    expect(reference?.mediaHint).toBe('message');
   });
 });
 
