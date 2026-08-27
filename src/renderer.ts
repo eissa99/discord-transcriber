@@ -449,10 +449,13 @@ function renderMessage(
     body.push(renderMarkdown(message.content, mentions));
     if (message.editedAt) body.push(EDITED_MARKER);
   }
-  // `dir="auto"` on the text alone, never on the row: the message keeps the
-  // document's layout - which side the avatar is on, where the gutter is -
-  // while what was written reads in the direction it was written in.
-  if (body.length > 0) parts.push(`<div class="content" dir="auto">${body.join(' ')}</div>`);
+  // No direction attribute anywhere, deliberately. The client sets none
+  // either, so an Arabic or Hebrew message sits against the left edge there
+  // exactly as an English one does, with the bidi algorithm ordering the
+  // words inside each line. Letting the direction follow the text instead
+  // would right-align those messages - arguably nicer, but no longer what
+  // the channel looked like, and embeds would still disagree with them.
+  if (body.length > 0) parts.push(`<div class="content">${body.join(' ')}</div>`);
 
   // A Components V2 message displays only what its own tree references, so its
   // uploads are already drawn by the File and MediaGallery components in it.
@@ -547,7 +550,7 @@ function renderForward(
   const parts: string[] = [];
 
   if (forward.content.trim() !== '') {
-    parts.push(`<div class="content" dir="auto">${renderMarkdown(forward.content, mentions)}</div>`);
+    parts.push(`<div class="content">${renderMarkdown(forward.content, mentions)}</div>`);
   }
   if (forward.attachments.length > 0) {
     parts.push(
@@ -691,7 +694,7 @@ function renderLayoutComponent(component: TranscriptLayoutComponent, mentions: M
     case 'section':
       return renderSection(component, mentions);
     case 'textDisplay':
-      return `<div class="content" dir="auto">${renderMarkdown(component.content, mentions)}</div>`;
+      return `<div class="content">${renderMarkdown(component.content, mentions)}</div>`;
     case 'mediaGallery':
       return renderMediaGallery(component);
     case 'file':

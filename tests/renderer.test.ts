@@ -1738,3 +1738,42 @@ describe('spoilers', () => {
     expect(html.split('.spoiler:hover').length - 1).toBe(1);
   });
 });
+
+describe('text direction', () => {
+  it('leaves every message the document direction, as the client does', () => {
+    const html = renderTranscript(
+      data({
+        messages: [
+          message({ content: 'مرحبًا بك في سيرفر الدعم' }),
+          message({
+            id: '900000000000000091',
+            content: '',
+            componentsV2: true,
+            components: [{ kind: 'textDisplay', content: 'لفتح تذكرة اضغط الزر' }],
+          }),
+          message({
+            id: '900000000000000092',
+            content: '',
+            embeds: [
+              mediaEmbed({
+                kind: 'rich',
+                url: null,
+                thumbnailUrl: null,
+                description: 'مرحبًا بك في سيرفر دعم بلوكس',
+              }),
+            ],
+          }),
+        ],
+      }),
+      { maxFileBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    // Discord's own markup carries no direction attribute, so Arabic sits
+    // against the left edge there - in a message and inside an embed alike.
+    expect(html).toContain('مرحبًا بك في سيرفر الدعم');
+    expect(html).toContain('مرحبًا بك في سيرفر دعم بلوكس');
+    expect(html).not.toContain('dir=');
+    expect(html).not.toContain('direction: rtl');
+    expect(html).not.toMatch(/\.content \{[^}]*text-align/);
+  });
+});

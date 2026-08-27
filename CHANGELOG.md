@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.2
+
+- right-to-left text keeps the client's own alignment: Discord sets no
+  direction on message content, so Arabic and Hebrew sit against the left
+  edge there, and messages, Components V2 text and forwards no longer
+  right-align them (embeds and panels never did, so the two now agree)
+
 ## 1.2.1
 
 - a reply to a message that has no line to quote now matches the client's exact
