@@ -72,6 +72,7 @@ function reply(
     authorAvatarUrl: 'https://cdn.discordapp.com/avatars/2/b.png',
     authorBot: false,
     hasMedia: false,
+    mediaHint: null,
     ...overrides,
   };
 }
@@ -266,6 +267,7 @@ describe('transcript rendering', () => {
               authorAvatarUrl: null,
               authorBot: false,
               hasMedia: false,
+              mediaHint: null,
             },
           }),
         ],
@@ -341,6 +343,7 @@ describe('transcript rendering', () => {
               authorAvatarUrl: null,
               authorBot: false,
               hasMedia: false,
+              mediaHint: null,
             },
           }),
         ],
@@ -413,11 +416,44 @@ describe('transcript rendering', () => {
 
   it('names the attachment when the message replied to had no text', () => {
     const html = renderTranscript(
-      data({ messages: [message({ reference: reply({ excerpt: '', hasMedia: true }) })] }),
+      data({
+        messages: [
+          message({ reference: reply({ excerpt: '', hasMedia: true, mediaHint: 'attachment' }) }),
+        ],
+      }),
       { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
     expect(html).toContain('Click to see attachment');
+  });
+
+  it('names a sticker with Discord\'s own wording and glyph', () => {
+    const html = renderTranscript(
+      data({
+        messages: [
+          message({ reference: reply({ excerpt: '', hasMedia: true, mediaHint: 'sticker' }) }),
+        ],
+      }),
+      { maxFileBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).toContain('Click to see sticker');
+    expect(html).not.toContain('Click to see attachment');
+    expect(html).toContain('class="reply-media-icon"');
+  });
+
+  it('shows "Click to see message" with no icon for a reply to a Components V2 message', () => {
+    const html = renderTranscript(
+      data({
+        messages: [message({ reference: reply({ excerpt: '', hasMedia: false, mediaHint: 'message' }) })],
+      }),
+      { maxFileBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    expect(html).toContain('Click to see message');
+    expect(html).not.toContain('Click to see attachment');
+    // A Components V2 reply carries the placeholder but no trailing glyph.
+    expect(html).not.toContain('class="reply-media-icon"');
   });
 
   it('leaves the quoted line empty when there was nothing to quote', () => {
@@ -443,7 +479,7 @@ describe('transcript rendering', () => {
 
   it('flags that the message replied to carried media', () => {
     const html = renderTranscript(
-      data({ messages: [message({ reference: reply({ hasMedia: true }) })] }),
+      data({ messages: [message({ reference: reply({ hasMedia: true, mediaHint: 'attachment' }) })] }),
       { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
@@ -453,12 +489,14 @@ describe('transcript rendering', () => {
   it('does not flag media on a reply pointing outside the transcript', () => {
     const html = renderTranscript(
       data({
-        messages: [message({ reference: reply({ resolved: false, hasMedia: true }) })],
+        messages: [
+          message({ reference: reply({ resolved: false, hasMedia: true, mediaHint: 'attachment' }) }),
+        ],
       }),
       { maxFileBytes: BIG_BUDGET },
     )[0]!.content.toString('utf8');
 
-    // `hasMedia` is unknowable for a message that was never collected.
+    // The media hint is unknowable for a message that was never collected.
     expect(html).not.toContain('class="reply-media-icon"');
   });
 });
@@ -1714,5 +1752,44 @@ describe('spoilers', () => {
     // The hover reveal survives only for readers whose scripts are blocked.
     expect(html).toContain('body:not(.js) .spoiler:hover');
     expect(html.split('.spoiler:hover').length - 1).toBe(1);
+  });
+});
+
+describe('text direction', () => {
+  it('leaves every message the document direction, as the client does', () => {
+    const html = renderTranscript(
+      data({
+        messages: [
+          message({ content: 'مرحبًا بك في سيرفر الدعم' }),
+          message({
+            id: '900000000000000091',
+            content: '',
+            componentsV2: true,
+            components: [{ kind: 'textDisplay', content: 'لفتح تذكرة اضغط الزر' }],
+          }),
+          message({
+            id: '900000000000000092',
+            content: '',
+            embeds: [
+              mediaEmbed({
+                kind: 'rich',
+                url: null,
+                thumbnailUrl: null,
+                description: 'مرحبًا بك في سيرفر دعم بلوكس',
+              }),
+            ],
+          }),
+        ],
+      }),
+      { maxFileBytes: BIG_BUDGET },
+    )[0]!.content.toString('utf8');
+
+    // Discord's own markup carries no direction attribute, so Arabic sits
+    // against the left edge there - in a message and inside an embed alike.
+    expect(html).toContain('مرحبًا بك في سيرفر الدعم');
+    expect(html).toContain('مرحبًا بك في سيرفر دعم بلوكس');
+    expect(html).not.toContain('dir=');
+    expect(html).not.toContain('direction: rtl');
+    expect(html).not.toMatch(/\.content \{[^}]*text-align/);
   });
 });

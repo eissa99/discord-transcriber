@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.2.2
+
+- right-to-left text keeps the client's own alignment: Discord sets no
+  direction on message content, so Arabic and Hebrew sit against the left
+  edge there, and messages, Components V2 text and forwards no longer
+  right-align them (embeds and panels never did, so the two now agree)
+
+## 1.2.1
+
+- a reply to a message that has no line to quote now matches the client's exact
+  wording per kind: "Click to see sticker" (with Discord's sticker glyph),
+  "Click to see attachment", and "Click to see message" for a Components V2
+  message — which the client never previews inline. Previously a reply to a
+  Components V2 message dumped its raw text, and a reply to a sticker was
+  mislabelled as an attachment.
+
 ## 1.2.0
 
 - `renderTranscript`'s size option is renamed from `maxBytes` to

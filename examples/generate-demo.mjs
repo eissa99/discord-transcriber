@@ -240,8 +240,11 @@ const messages = [
     // A forwarded message: the material lives in the snapshot, not in content.
     content: '',
     forwarded: {
-      content: `To open a ticket press the button 🎫
-Welcome to **CastCord** Support!`,
+      content: `To open a ticket press the button 🇺🇸
+Welcome to **CastCord** Support!
+
+لفتح تذكرة اضغط الزر 🇸🇦
+مرحبًا بك في سيرفر دعم **كاست كورد**`,
       attachments: [],
       embeds: [],
       stickers: [],

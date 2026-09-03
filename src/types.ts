@@ -216,6 +216,15 @@ export interface TranscriptReference {
    * the row blank, which is what an empty excerpt would otherwise produce.
    */
   readonly hasMedia: boolean;
+  /**
+   * How Discord labels a reply whose quoted line is empty, matching the exact
+   * wording it uses: `'sticker'` → "Click to see sticker", `'attachment'` →
+   * "Click to see attachment", `'message'` → "Click to see message" (a
+   * Components V2 message, which Discord never previews inline). `null` when
+   * the excerpt carries the quoted text itself. Preferred over `hasMedia` for
+   * rendering the placeholder and its trailing icon.
+   */
+  readonly mediaHint: 'sticker' | 'attachment' | 'message' | null;
 }
 
 export interface TranscriptReaction {
