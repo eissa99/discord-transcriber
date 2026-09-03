@@ -159,7 +159,11 @@ for (const file of FILES) {
 const { version, depsChanged } = syncPackageJson();
 
 const total = added.length + changed.length + removed.length;
-for (const [label, list] of [['+', added], ['~', changed], ['-', removed]]) {
+for (const [label, list] of [
+  ['+', added],
+  ['~', changed],
+  ['-', removed],
+]) {
   for (const file of list) console.log(`  ${label} ${file}`);
 }
 

@@ -85,8 +85,7 @@ export async function createTranscript(
     typeof options.maxFileBytes === 'number'
       ? options.maxFileBytes
       : uploadBudgetBytes(channel.guild);
-  const filename =
-    options.filename ?? safeFileName(`transcript-${channel.name}`, 'transcript');
+  const filename = options.filename ?? safeFileName(`transcript-${channel.name}`, 'transcript');
   const favicon = resolveFavicon(options.favicon, channel);
 
   const parts = renderTranscript(data, {

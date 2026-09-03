@@ -32,7 +32,10 @@ client.on('interactionCreate', async (interaction) => {
     files: [first],
   });
   for (const file of rest) {
-    await interaction.followUp({ files: [file], flags: MessageFlags.Ephemeral });
+    await interaction.followUp({
+      files: [file],
+      flags: MessageFlags.Ephemeral,
+    });
   }
 });
 

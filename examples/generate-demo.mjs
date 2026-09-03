@@ -85,8 +85,22 @@ const messages = [
           {
             kind: 'actionRow',
             components: [
-              { kind: 'button', label: 'Close', style: 'danger', disabled: false, url: null, emoji: null },
-              { kind: 'button', label: 'Claim', style: 'primary', disabled: false, url: null, emoji: null },
+              {
+                kind: 'button',
+                label: 'Close',
+                style: 'danger',
+                disabled: false,
+                url: null,
+                emoji: null,
+              },
+              {
+                kind: 'button',
+                label: 'Claim',
+                style: 'primary',
+                disabled: false,
+                url: null,
+                emoji: null,
+              },
               {
                 kind: 'button',
                 label: 'Docs',
@@ -238,14 +252,22 @@ Welcome to **CastCord** Support!
         {
           kind: 'actionRow',
           components: [
-            { kind: 'button', label: 'Open Ticket', style: 'primary', disabled: false, url: null, emoji: null },
+            {
+              kind: 'button',
+              label: 'Open Ticket',
+              style: 'primary',
+              disabled: false,
+              url: null,
+              emoji: null,
+            },
           ],
         },
       ],
       originChannelName: '「🌐」welcome',
       originTimestamp: new Date(Date.UTC(2026, 6, 24, 5, 4)),
       originMessageId: null,
-      originUrl: 'https://discord.com/channels/100000000000000001/100000000000000002/100000000000000003',
+      originUrl:
+        'https://discord.com/channels/100000000000000001/100000000000000002/100000000000000003',
     },
   },
   {
@@ -255,7 +277,12 @@ Welcome to **CastCord** Support!
     createdAt: at(25),
     content: 'Ticket closed by **Eissa**. A transcript of this channel has been saved.',
     // The row Discord shows above a slash-command reply: "Eissa used /close".
-    interaction: { commandName: 'close', userName: 'Eissa', userAvatarUrl: null, userColor: '#f0a52a' },
+    interaction: {
+      commandName: 'close',
+      userName: 'Eissa',
+      userAvatarUrl: null,
+      userColor: '#f0a52a',
+    },
   },
 ];
 
@@ -286,7 +313,12 @@ const parts = renderTranscript(
       { label: 'Opened by', value: '7sO (7so)', icon: 'person' },
       { label: 'Handled by', value: 'Eissa (eissa)', icon: 'shield' },
       { label: 'Messages', value: '9', icon: 'chat' },
-      { label: 'Resolution', value: 'Fixed by updating to version 4.2.2.', icon: 'note', wide: true },
+      {
+        label: 'Resolution',
+        value: 'Fixed by updating to version 4.2.2.',
+        icon: 'note',
+        wide: true,
+      },
     ],
   },
 );

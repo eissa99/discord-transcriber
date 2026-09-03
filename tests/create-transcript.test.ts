@@ -54,10 +54,16 @@ function fakeChannel(messages: readonly Message<true>[]): GuildTextBasedChannel 
       name: 'Awesome Guild',
       premiumTier: 0,
       iconURL: () => 'https://cdn.discordapp.com/icons/1/guild.png',
-      members: { cache: new Map(), fetch: () => Promise.reject(new Error('Unknown Member')) },
+      members: {
+        cache: new Map(),
+        fetch: () => Promise.reject(new Error('Unknown Member')),
+      },
     },
     client: {
-      users: { cache: new Map(), fetch: () => Promise.reject(new Error('Unknown User')) },
+      users: {
+        cache: new Map(),
+        fetch: () => Promise.reject(new Error('Unknown User')),
+      },
     },
   } as unknown as GuildTextBasedChannel;
 }
@@ -114,7 +120,11 @@ describe('createTranscript', () => {
 
   it('keeps only the messages the filter accepts', async () => {
     const transcript = await createTranscript(
-      fakeChannel([fakeMessage('1', 'keep me'), fakeMessage('2', 'drop me'), fakeMessage('3', 'keep too')]),
+      fakeChannel([
+        fakeMessage('1', 'keep me'),
+        fakeMessage('2', 'drop me'),
+        fakeMessage('3', 'keep too'),
+      ]),
       { filter: (message) => !message.content.startsWith('drop') },
     );
 
@@ -131,7 +141,9 @@ describe('createTranscript', () => {
       fakeMessage(String(index + 1), `Message ${String(index + 1)}`),
     );
 
-    const transcript = await createTranscript(fakeChannel(many), { limit: 100 });
+    const transcript = await createTranscript(fakeChannel(many), {
+      limit: 100,
+    });
 
     expect(transcript.messageCount).toBe(100);
     expect(transcript.truncated).toBe(true);
