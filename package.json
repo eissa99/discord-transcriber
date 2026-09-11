@@ -71,6 +71,6 @@
     "discord.js": "14.27.0",
     "tsup": "8.5.0",
     "typescript": "5.9.3",
-    "vitest": "4.1.10"
+    "vitest": "4.1.11"
   }
 }
